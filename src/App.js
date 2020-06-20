@@ -1,11 +1,13 @@
 import React, { Component } from 'react';
-import { BrowserRouter, Route, Redirect, Switch } from 'react-router-dom';
+import {Route, Redirect, Switch } from 'react-router-dom';
+import { ApolloProvider } from '@apollo/react-hooks';
 
-import AuthPage from './pages/Auth';
 import MainNavigation from './component/Navigation/MainNavigation';
 import AuthContext from './context/auth-context';
 
 import './App.css';
+import { useAppApolloClient } from './config/apolloClient';
+import LoginPage from './pages/Login';
 
 class App extends Component {
   state = {
@@ -23,7 +25,6 @@ class App extends Component {
 
   render() {
     return (
-      <BrowserRouter>
         <React.Fragment>
           <AuthContext.Provider
             value={{
@@ -33,26 +34,22 @@ class App extends Component {
               logout: this.logout
             }}
           >
-            <MainNavigation />
-            <main className="main-content">
-              <Switch>
-                {/* {this.state.token && <Redirect from="/" to="/events" exact />} */}
-                {/* {this.state.token && (
-                  <Redirect from="/auth" to="/events" exact />
-                )} */}
-                {!this.state.token && (
-                  <Route path="/auth" component={AuthPage} />
-                )}
-                {/* <Route path="/events" component={EventsPage} /> */}
-                {/* {this.state.token && (
-                  <Route path="/bookings" component={BookingsPage} />
-                )} */}
-                {!this.state.token && <Redirect to="/auth" exact />}
-              </Switch>
-            </main>
+            <ApolloProvider client={useAppApolloClient(this.state.token)}>
+              <MainNavigation />
+              <main className="main-content">
+                <Switch>
+                  {!this.state.token && (
+                    <Route path="/auth" component={LoginPage} />
+                  )}
+                  {!this.state.token && <Redirect to="/auth" exact />}
+                  {
+                    console.log(this.state.token)
+                  }
+                </Switch>
+              </main>
+            </ApolloProvider>
           </AuthContext.Provider>
         </React.Fragment>
-      </BrowserRouter>
     );
   }
 }
