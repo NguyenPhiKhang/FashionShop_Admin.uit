@@ -1,10 +1,9 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, {useContext, useEffect } from 'react';
 
 import './Auth.css';
-import { useLazyQuery, useMutation } from '@apollo/react-hooks';
-import { userLoginQuery } from '../network/queries';
-import { userRegisterMutation } from '../network/mutations';
-import authContext from '../context/auth-context';
+import { useLazyQuery} from '@apollo/react-hooks';
+import { userLoginQuery } from '../../network/queries';
+import authContext from '../../context/auth-context';
 import { Spin, Form, Input, Button, Checkbox, } from 'antd';
 import Title from 'antd/lib/typography/Title';
 import { LockOutlined, MailOutlined } from '@ant-design/icons';
@@ -14,26 +13,18 @@ const layout = {
 };
 
 function LoginPage() {
-
-  const [isLogin, setIsLogin] = useState(true);
   const [formControl] = Form.useForm();
   const context = useContext(authContext);
 
   const [userLogin, { loading, data, error }] = useLazyQuery(userLoginQuery);
-  const [userRegister] = useMutation(userRegisterMutation, {
-    onCompleted: (data) => {
-      console.log("dataRegister: " + data.createUser._id);
-      setIsLogin(true);
-    }, onError: (error) => {
-      console.log("error mutation: " + error.message);
-    }
-  });
 
   useEffect(() => {
     formControl.setFieldsValue({
       username: '',
       password: ''
     });
+
+    console.log(context.token);
   }, []);
 
   const onFinish = values => {
@@ -55,10 +46,6 @@ function LoginPage() {
   const onFinishFailed = errorInfo => {
     console.log('Failed:', errorInfo);
   };
-
-  // function switchModeHandler() {
-  //   setIsLogin(!isLogin);
-  // };
 
   if (data) {
     context.login(

@@ -2,11 +2,11 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import { BrowserRouter } from 'react-router-dom';
-import AuthNavigation from './component/Navigation/AuthNavigation';
+import App from './App';
 
 ReactDOM.render(
   <BrowserRouter>
-    <AuthNavigation />
+    <App />
   </BrowserRouter>,
   document.getElementById('root')
 );

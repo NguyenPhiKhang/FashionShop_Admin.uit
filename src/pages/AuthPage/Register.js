@@ -1,13 +1,14 @@
 import React, { useState, useContext, useEffect } from 'react';
 
 import './Auth.css';
-import { useLazyQuery, useMutation, useQuery } from '@apollo/react-hooks';
-import { userLoginQuery, getPermissionQuery } from '../network/queries';
-import { userRegisterMutation } from '../network/mutations';
-import authContext from '../context/auth-context';
-import { Spin, Form, Input, Button, Checkbox, Radio, } from 'antd';
+import { useMutation, useQuery } from '@apollo/react-hooks';
+import { getPermissionQuery } from '../../network/queries';
+import { userRegisterMutation } from '../../network/mutations';
+// import authContext from '../../context/auth-context';
+import { Spin, Form, Input, Button, Radio, } from 'antd';
 import Title from 'antd/lib/typography/Title';
 import { MailOutlined, LockOutlined } from '@ant-design/icons';
+import { useHistory } from 'react-router-dom';
 
 const layout = {
     wrapperCol: { span: 24 },
@@ -16,8 +17,9 @@ const layout = {
 function RegisterPage() {
 
     const [formControl] = Form.useForm();
-    const context = useContext(authContext);
+    // const context = useContext(authContext);
     const [permission, setPermission] = useState('');
+    const history = useHistory();
 
     const [userRegister] = useMutation(userRegisterMutation, {
         onCompleted: (data) => {
@@ -27,24 +29,35 @@ function RegisterPage() {
         }
     });
 
-    const { loading: loadingPermission, error: errorPermission, data: dataPermission } = useQuery(getPermissionQuery);
+    const { loading: loadingPermission, data: dataPermission } = useQuery(getPermissionQuery);
 
     useEffect(() => {
         formControl.setFieldsValue({
-            username: '',
-            password: '',
-            password_again: '',
+            permission: permission
         });
+    }, [permission]);
+
+    useEffect(() => {
+        formControl.setFieldsValue({ email: '', password: '', password_again: '' });
     }, []);
 
-    const onFinish = values => {
-        console.log('Success:', values);
+    const onFinish = async (values) => {
         const email = values.email;
         const password = values.password;
+        const permissionId = values.permission;
 
-        if (email.trim().length === 0 || password.trim().length === 0) {
+        if (email.trim().length === 0 || password.trim().length === 0 || permissionId.trim().length === 0) {
             return;
         }
+
+        await userRegister({
+            variables: {
+                email: email,
+                password: password,
+                permission_id: permissionId
+            }
+        });
+        history.push("/auth/login");
     };
 
     const onFinishFailed = errorInfo => {
@@ -112,7 +125,7 @@ function RegisterPage() {
                         (!loadingPermission && dataPermission) ?
                             <Radio.Group>
                                 {
-                                    permission != dataPermission.getPermission[0]._id ? setPermission(dataPermission.getPermission[0]._id) :
+                                    permission.toString() !== dataPermission.getPermission[0]._id.toString() ? setPermission(dataPermission.getPermission[0]._id) :
                                         dataPermission.getPermission.map(rs => {
                                             return <Radio key={rs._id} value={rs._id} style={{ color: '#fff' }}>{rs.name}</Radio>
                                         })
