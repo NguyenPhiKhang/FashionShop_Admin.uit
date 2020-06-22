@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Title from 'antd/lib/typography/Title';
-import { NavLink, Switch, Route, Redirect } from 'react-router-dom';
+import { NavLink, Switch, Route, Redirect, useLocation } from 'react-router-dom';
 import { authRoutes } from '../config/routers';
 const { Layout, Menu, Avatar } = require("antd");
 
@@ -8,12 +8,12 @@ const { Header, Content } = Layout;
 
 const AuthNavigation = () => {
 
-    //const location = useLocation();
-    // const [pathname, setPathname] = useState(null);
+    const location = useLocation();
+    const [pathname, setPathname] = useState(null);
 
-    // useEffect(() => {
-    //     setPathname(location.pathname);
-    // }, [location.pathname])
+    useEffect(() => {
+        setPathname(location.pathname);
+    }, [location.pathname]);
 
     return (
         <Layout className="layout">
@@ -22,7 +22,7 @@ const AuthNavigation = () => {
                     <Avatar src="/assets/fashion_logo.png" shape="square" />
                     <Title style={{ color: "white", paddingLeft: 10, paddingTop: 10 }} level={4}>Fashion Shop</Title>
                 </div>
-                <Menu theme="dark" mode="horizontal" defaultSelectedKeys={["0"]}>
+                <Menu theme="dark" mode="horizontal" selectedKeys={pathname === "/auth/register"? ["1"]:["0"]}>
                     {
                         authRoutes.map((data, index) => {
                             return (

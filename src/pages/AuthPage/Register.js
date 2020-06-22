@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 
 import './Auth.css';
 import { useMutation, useQuery } from '@apollo/react-hooks';
@@ -37,9 +37,9 @@ function RegisterPage() {
     //     });
     // }, [permission]);
 
-    useEffect(() => {
-        formControl.setFieldsValue({ email: '', password: '', password_again: '', permission: '' });
-    }, []);
+    // useEffect(() => {
+    //     formControl.setFieldsValue({ email: '', password: '', password_again: ''});
+    // }, []);
 
     const onFinish = async (values) => {
         const email = values.email;
@@ -70,6 +70,12 @@ function RegisterPage() {
             <Form
                 {...layout}
                 name="basic"
+                initialValues={{
+                    permission: '',
+                    email: '',
+                    password: '',
+                    password_again: ''
+                }}
                 onFinish={onFinish}
                 onFinishFailed={onFinishFailed}
                 style={{ backgroundColor: 'rgba(0,0,0, 0.4)', padding: 10, width: 300, borderRadius: 15, boxShadow: '2px 5px 10px white' }}
