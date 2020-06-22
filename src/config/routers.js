@@ -1,37 +1,53 @@
 import {
-    UserOutlined,
-    UploadOutlined,
-    VideoCameraOutlined,
+    CodepenCircleOutlined,
+    SettingOutlined,
+    LineChartOutlined,
+    AppstoreOutlined,
+    TeamOutlined
 } from '@ant-design/icons';
 
 import React from 'react';
-import TableRedash from '../pages/table/index';
-import Chart from '../pages/chart/chart';
-import Alert from '../pages/alert/alert';
+import Products from '../pages/ProductPage/index';
+import Reports from '../pages/ReportPage';
+import Settings from '../pages/SettingPage';
 import LoginPage from '../pages/AuthPage/Login';
 import RegisterPage from '../pages/AuthPage/Register';
 
 const pageRoutes=[
         {
-            path: "/table",
-            link: "/table",
-            icon: React.createElement(UserOutlined),
-            name: 'Table',
-            component: TableRedash
+            path: "/products",
+            link: "/products",
+            icon: React.createElement(CodepenCircleOutlined),
+            name: 'Quản lý kho',
+            component: Products
         },
         {
-            path: "/chart",
-            link: "/chart",
-            icon: React.createElement(VideoCameraOutlined),
-            name: 'Chart',
-            component: Chart
+            path: "/categories",
+            link: "/categories",
+            icon: React.createElement(AppstoreOutlined),
+            name: 'Quản lý danh mục',
+            component: Settings
         },
         {
-            path: "/alert",
-            link: "/alert",
-            icon: React.createElement(UploadOutlined),
-            name: 'Alert',
-            component: Alert
+            path: "/customers",
+            link: "/customers",
+            icon: React.createElement(TeamOutlined),
+            name: 'Quản lý khách hàng',
+            component: Settings
+        },
+        {
+            path: "/reports",
+            link: "/reports",
+            icon: React.createElement(LineChartOutlined),
+            name: 'Thống kê',
+            component: Reports
+        },
+        {
+            path: "/settings",
+            link: "/settings",
+            icon: React.createElement(SettingOutlined),
+            name: 'Cài đặt',
+            component: Settings
         }
 ];
 

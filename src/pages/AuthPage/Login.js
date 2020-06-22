@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 
 import './Auth.css';
 import { useLazyQuery } from '@apollo/react-hooks';
-import { userLoginQuery } from '../../network/queries';
+import { accountLoginQuery } from '../../network/queries';
 import authContext from '../../context/auth-context';
 import { Spin, Form, Input, Button, Checkbox, } from 'antd';
 import Title from 'antd/lib/typography/Title';
@@ -16,7 +16,7 @@ function LoginPage() {
   const [formControl] = Form.useForm();
   const context = useContext(authContext);
 
-  const [userLogin, { loading, data, error }] = useLazyQuery(userLoginQuery);
+  const [accountLogin, { loading, data, error }] = useLazyQuery(accountLoginQuery);
 
   const onFinish = values => {
     console.log('Success:', values);
@@ -26,7 +26,7 @@ function LoginPage() {
     if (email.trim().length === 0 || password.trim().length === 0) {
       return;
     }
-    userLogin({
+    accountLogin({
       variables: {
         email: email,
         password: password
@@ -41,7 +41,7 @@ function LoginPage() {
   if (data) {
     context.login(
       data.login.token,
-      data.login.userId,
+      data.login.accountId,
       data.login.tokenExpiration
     );
     console.log(data);

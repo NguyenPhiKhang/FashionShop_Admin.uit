@@ -1,8 +1,8 @@
 import React from 'react';
 import DoughnutChart from '../../component/chart/Doughnut';
 
-const Chart= ()=>{
+const Reports= ()=>{
     return <DoughnutChart />
 }
 
-export default Chart;
+export default Reports;

@@ -49,7 +49,7 @@ const MainNavigation = () => {
         </Menu>
       </Sider>
       <Layout className="site-layout" style={{ marginLeft: collapsed ? 80 : 200 }}>
-        <Header className="site-layout-background" style={{ paddingLeft: 0, position: 'fixed', width: '100vw', boxShadow: '0 4px #f0f1f2' }} />
+        <Header className="site-layout-background" style={{ paddingLeft: 0, position: 'fixed', width: '100vw', boxShadow: '0 4px #f0f1f2', zIndex: 2 }} />
         <Content style={{ margin: '16px 16px 0', overflow: 'initial', paddingTop: 80 }}>
           <div className="site-layout-background" style={{ padding: 24, textAlign: 'center' }}>
             <Switch>
@@ -60,7 +60,7 @@ const MainNavigation = () => {
                   );
                 })
               }
-              <Redirect to="/table" exact />
+              <Redirect to="/products" exact />
             </Switch>
           </div>
         </Content>

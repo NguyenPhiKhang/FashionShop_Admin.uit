@@ -1,9 +1,9 @@
 import gql from 'graphql-tag';
 
-const userLoginQuery = gql`
+const accountLoginQuery = gql`
 query Login($email: String!, $password: String!) {
     login(email: $email, password: $password) {
-      userId
+      accountId
       token
       tokenExpiration
     }
@@ -25,4 +25,4 @@ const getIdPermissionQuery = gql`
   }
 `;
 
-export {userLoginQuery, getPermissionQuery, getIdPermissionQuery};
+export {accountLoginQuery, getPermissionQuery, getIdPermissionQuery};

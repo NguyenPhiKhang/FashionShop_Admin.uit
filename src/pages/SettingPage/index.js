@@ -39,7 +39,7 @@ const ShowAlert = () => {
     })
 }
 
-const Alert = () => {
+const Settings = () => {
     return (
         <div>
             <button onClick={()=>{ShowAlert()}}>
@@ -49,4 +49,4 @@ const Alert = () => {
     );
 }
 
-export default Alert;
+export default Settings;

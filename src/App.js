@@ -12,16 +12,16 @@ import AuthNavigation from './Navigation/AuthNavigation';
 const App = () => {
 
   const [token, setToken] = useState(null);
-  const [userId, setUserId] = useState(null);
+  const [accountId, setAccountId] = useState(null);
 
-  const login = (token, userId, tokenExpiration) => {
+  const login = (token, accountId, tokenExpiration) => {
     setToken(token);
-    setUserId(userId);
+    setAccountId(accountId);
   };
 
   const logout = () => {
     setToken(null);
-    setUserId(null);
+    setAccountId(null);
   };
 
   return (
@@ -29,7 +29,7 @@ const App = () => {
       <AuthContext.Provider
         value={{
           token: token,
-          userId: userId,
+          accountId: accountId,
           login: login,
           logout: logout
         }}

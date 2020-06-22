@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import './Auth.css';
 import { useMutation, useLazyQuery } from '@apollo/react-hooks';
 import { getIdPermissionQuery } from '../../network/queries';
-import { userRegisterMutation } from '../../network/mutations';
+import { accountRegisterMutation } from '../../network/mutations';
 import { Spin, Form, Input, Button, Radio, } from 'antd';
 import Title from 'antd/lib/typography/Title';
 import { MailOutlined, LockOutlined } from '@ant-design/icons';
@@ -17,13 +17,12 @@ function RegisterPage() {
 
     const history = useHistory();
     const [formControl] = Form.useForm();
-    // const [loading, setLoading] = useState(false);
     const [input, setInput] = useState({email: '', password: '', loading: false});
 
     const [getIdPermission] = useLazyQuery(getIdPermissionQuery, {
         onCompleted: (data)=>{
             console.log(input.email+" "+input.password);
-            userRegister({
+            accountRegister({
                 variables: {
                     email: input.email,
                     password: input.password,
@@ -33,9 +32,9 @@ function RegisterPage() {
         },
     });
 
-    const [userRegister] = useMutation(userRegisterMutation, {
+    const [accountRegister] = useMutation(accountRegisterMutation, {
         onCompleted: (data) => {
-            console.log("dataRegister: " + data.createUser._id);
+            console.log("dataRegister: " + data.createAccount._id);
             setInput({loading: false});
             history.push("/auth/login");
         }, onError: (error) => {
