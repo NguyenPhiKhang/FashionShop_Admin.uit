@@ -4,10 +4,6 @@ import {
     VideoCameraOutlined,
 } from '@ant-design/icons';
 
-// import About from '../../containers/pages/About';
-//import Contact from '../../containers/pages/Contact';
-//import Home from '../../containers/pages/Home';
-
 import React from 'react';
 import TableRedash from '../pages/table/index';
 import Chart from '../pages/chart/chart';
