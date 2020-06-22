@@ -1,8 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import Title from 'antd/lib/typography/Title';
-import LoginPage from '../pages/AuthPage/Login';
-import RegisterPage from '../pages/AuthPage/Register';
-import { NavLink, Switch, Route, useLocation, Redirect } from 'react-router-dom';
+import { NavLink, Switch, Route, Redirect } from 'react-router-dom';
 import { authRoutes } from '../config/routers';
 const { Layout, Menu, Avatar } = require("antd");
 
@@ -10,12 +8,12 @@ const { Header, Content } = Layout;
 
 const AuthNavigation = () => {
 
-    const location = useLocation();
-    const [pathname, setPathname] = useState(null);
+    //const location = useLocation();
+    // const [pathname, setPathname] = useState(null);
 
-    useEffect(() => {
-        setPathname(location.pathname);
-    }, [location.pathname])
+    // useEffect(() => {
+    //     setPathname(location.pathname);
+    // }, [location.pathname])
 
     return (
         <Layout className="layout">

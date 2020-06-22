@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 
 import './Auth.css';
 import { useMutation, useQuery } from '@apollo/react-hooks';
@@ -31,15 +31,11 @@ function RegisterPage() {
 
     const { loading: loadingPermission, data: dataPermission } = useQuery(getPermissionQuery);
 
-    useEffect(() => {
-        formControl.setFieldsValue({
-            permission: permission
-        });
-    }, [permission]);
-
-    useEffect(() => {
-        formControl.setFieldsValue({ email: '', password: '', password_again: '' });
-    }, []);
+    // useEffect(() => {
+    //     formControl.setFieldsValue({
+    //         permission: permission
+    //     });
+    // }, [permission]);
 
     const onFinish = async (values) => {
         const email = values.email;
@@ -71,7 +67,10 @@ function RegisterPage() {
                 {...layout}
                 name="basic"
                 initialValues={{
-                    permission: permission
+                    permission: permission,
+                    email: '',
+                    password: '',
+                    password_again: ''
                 }}
                 onFinish={onFinish}
                 onFinishFailed={onFinishFailed}

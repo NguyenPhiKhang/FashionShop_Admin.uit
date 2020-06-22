@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext } from 'react';
 
 import './Auth.css';
 import { useLazyQuery } from '@apollo/react-hooks';
@@ -17,15 +17,6 @@ function LoginPage() {
   const context = useContext(authContext);
 
   const [userLogin, { loading, data, error }] = useLazyQuery(userLoginQuery);
-
-  useEffect(() => {
-    formControl.setFieldsValue({
-      username: '',
-      password: ''
-    });
-
-    console.log(context.token);
-  }, []);
 
   const onFinish = values => {
     console.log('Success:', values);
@@ -72,6 +63,8 @@ function LoginPage() {
           name="basic"
           initialValues={{
             remember: true,
+            email: '',
+            password: ''
           }}
           onFinish={onFinish}
           onFinishFailed={onFinishFailed}
