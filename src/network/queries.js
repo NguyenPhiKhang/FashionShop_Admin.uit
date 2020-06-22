@@ -19,4 +19,10 @@ const getPermissionQuery = gql`
   }
 `;
 
-export {userLoginQuery, getPermissionQuery};
+const getIdPermissionQuery = gql`
+  query GetIdPermission($name: String!){
+    getIdPermission(name: $name)
+  }
+`;
+
+export {userLoginQuery, getPermissionQuery, getIdPermissionQuery};

@@ -1,10 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 import './Auth.css';
-import { useMutation, useQuery } from '@apollo/react-hooks';
-import { getPermissionQuery } from '../../network/queries';
+import { useMutation, useLazyQuery } from '@apollo/react-hooks';
+import { getIdPermissionQuery } from '../../network/queries';
 import { userRegisterMutation } from '../../network/mutations';
-// import authContext from '../../context/auth-context';
 import { Spin, Form, Input, Button, Radio, } from 'antd';
 import Title from 'antd/lib/typography/Title';
 import { MailOutlined, LockOutlined } from '@ant-design/icons';
@@ -16,48 +15,48 @@ const layout = {
 
 function RegisterPage() {
 
-    const [formControl] = Form.useForm();
-    // const context = useContext(authContext);
-    // const [permission, setPermission] = useState('');
     const history = useHistory();
+    const [formControl] = Form.useForm();
+    // const [loading, setLoading] = useState(false);
+    const [input, setInput] = useState({email: '', password: '', loading: false});
+
+    const [getIdPermission] = useLazyQuery(getIdPermissionQuery, {
+        onCompleted: (data)=>{
+            console.log(input.email+" "+input.password);
+            userRegister({
+                variables: {
+                    email: input.email,
+                    password: input.password,
+                    permission_id: data.getIdPermission
+                }
+            });
+        },
+    });
 
     const [userRegister] = useMutation(userRegisterMutation, {
         onCompleted: (data) => {
             console.log("dataRegister: " + data.createUser._id);
+            setInput({loading: false});
+            history.push("/auth/login");
         }, onError: (error) => {
             console.log("error mutation: " + error.message);
         }
     });
 
-    const { loading: loadingPermission, data: dataPermission } = useQuery(getPermissionQuery);
+    const onFinish = (values) => {
+        const permissionName = values.permission;
 
-    // useEffect(() => {
-    //     formControl.setFieldsValue({
-    //         permission: permission
-    //     });
-    // }, [permission]);
-
-    // useEffect(() => {
-    //     formControl.setFieldsValue({ email: '', password: '', password_again: ''});
-    // }, []);
-
-    const onFinish = async (values) => {
-        const email = values.email;
-        const password = values.password;
-        const permissionId = values.permission;
-
-        if (email.trim().length === 0 || password.trim().length === 0 || permissionId.trim().length === 0) {
+        if (values.email.trim().length === 0 || values.password.trim().length === 0 || permissionName.trim().length === 0) {
             return;
         }
 
-        await userRegister({
+        setInput({email: values.email, password: values.password, loading: true})
+
+        getIdPermission({
             variables: {
-                email: email,
-                password: password,
-                permission_id: permissionId
+                name: permissionName
             }
         });
-        history.push("/auth/login");
     };
 
     const onFinishFailed = errorInfo => {
@@ -65,13 +64,13 @@ function RegisterPage() {
     };
 
     return (
-        // loading ? <Spin size="large" /> :
+        (input.loading)?<Spin size="large"/>:
         <React.Fragment>
             <Form
                 {...layout}
                 name="basic"
                 initialValues={{
-                    permission: '',
+                    permission: "Admin",
                     email: '',
                     password: '',
                     password_again: ''
@@ -124,16 +123,10 @@ function RegisterPage() {
                 </Form.Item>
 
                 <Form.Item name="permission">
-                    {
-                        (!loadingPermission && dataPermission) ?
-                            <Radio.Group>
-                                {
-                                    dataPermission.getPermission.map(rs => {
-                                        return <Radio key={rs._id} value={rs._id} style={{ color: '#fff' }}>{rs.name}</Radio>
-                                    })
-                                }
-                            </Radio.Group> : <Spin size="large" />
-                    }
+                    <Radio.Group>
+                        <Radio value="Admin" style={{ color: '#fff' }}>Admin</Radio>
+                        <Radio value="User" style={{ color: '#fff' }}>User</Radio>
+                    </Radio.Group>
                 </Form.Item>
 
                 <Form.Item {...layout} style={{ marginBottom: 10 }}>
