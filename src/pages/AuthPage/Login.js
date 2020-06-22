@@ -1,7 +1,7 @@
-import React, {useContext, useEffect } from 'react';
+import React, { useContext, useEffect } from 'react';
 
 import './Auth.css';
-import { useLazyQuery} from '@apollo/react-hooks';
+import { useLazyQuery } from '@apollo/react-hooks';
 import { userLoginQuery } from '../../network/queries';
 import authContext from '../../context/auth-context';
 import { Spin, Form, Input, Button, Checkbox, } from 'antd';
@@ -65,7 +65,7 @@ function LoginPage() {
   }
 
   return (
-    loading ? <Spin size="large"/> :
+    loading ? <Spin size="large" /> :
       <React.Fragment>
         <Form
           {...layout}
