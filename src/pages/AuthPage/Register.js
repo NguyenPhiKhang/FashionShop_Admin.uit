@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import './Auth.css';
 import { useMutation, useQuery } from '@apollo/react-hooks';
@@ -18,7 +18,7 @@ function RegisterPage() {
 
     const [formControl] = Form.useForm();
     // const context = useContext(authContext);
-    const [permission, setPermission] = useState('');
+    // const [permission, setPermission] = useState('');
     const history = useHistory();
 
     const [userRegister] = useMutation(userRegisterMutation, {
@@ -36,6 +36,10 @@ function RegisterPage() {
     //         permission: permission
     //     });
     // }, [permission]);
+
+    useEffect(() => {
+        formControl.setFieldsValue({ email: '', password: '', password_again: '', permission: '' });
+    }, []);
 
     const onFinish = async (values) => {
         const email = values.email;
@@ -66,12 +70,6 @@ function RegisterPage() {
             <Form
                 {...layout}
                 name="basic"
-                initialValues={{
-                    permission: permission,
-                    email: '',
-                    password: '',
-                    password_again: ''
-                }}
                 onFinish={onFinish}
                 onFinishFailed={onFinishFailed}
                 style={{ backgroundColor: 'rgba(0,0,0, 0.4)', padding: 10, width: 300, borderRadius: 15, boxShadow: '2px 5px 10px white' }}
@@ -124,10 +122,9 @@ function RegisterPage() {
                         (!loadingPermission && dataPermission) ?
                             <Radio.Group>
                                 {
-                                    permission.toString() !== dataPermission.getPermission[0]._id.toString() ? setPermission(dataPermission.getPermission[0]._id) :
-                                        dataPermission.getPermission.map(rs => {
-                                            return <Radio key={rs._id} value={rs._id} style={{ color: '#fff' }}>{rs.name}</Radio>
-                                        })
+                                    dataPermission.getPermission.map(rs => {
+                                        return <Radio key={rs._id} value={rs._id} style={{ color: '#fff' }}>{rs.name}</Radio>
+                                    })
                                 }
                             </Radio.Group> : <Spin size="large" />
                     }
@@ -136,7 +133,7 @@ function RegisterPage() {
                 <Form.Item {...layout} style={{ marginBottom: 10 }}>
                     <Button type="primary" htmlType="submit" block style={{ borderRadius: 20 }}>
                         Đăng ký
-            </Button>
+                    </Button>
                 </Form.Item>
             </Form>
         </React.Fragment>
