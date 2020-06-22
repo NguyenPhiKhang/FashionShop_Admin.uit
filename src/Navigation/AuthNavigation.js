@@ -23,7 +23,7 @@ const AuthNavigation = () => {
                     <Avatar src="/assets/fashion_logo.png" shape="square" />
                     <Title style={{ color: "white", paddingLeft: 10, paddingTop: 10 }} level={4}>Fashion Shop</Title>
                 </div>
-                <Menu theme="dark" mode="horizontal" selectedKeys={pathname === "/auth/register" ? "2" : "1"}>
+                <Menu theme="dark" mode="horizontal" defaultSelectedKeys={["1"]}>
                     <Menu.Item key="1">
                         <NavLink to="/auth/login">Đăng nhập</NavLink>
                     </Menu.Item>
