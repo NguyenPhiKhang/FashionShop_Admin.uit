@@ -12,9 +12,9 @@ const AuthNavigation = () => {
     const location = useLocation();
     const [pathname, setPathname] = useState(null);
 
-    useEffect(()=>{
+    useEffect(() => {
         setPathname(location.pathname);
-    },[location.pathname])
+    }, [location.pathname])
 
     return (
         <Layout className="layout">
@@ -34,8 +34,8 @@ const AuthNavigation = () => {
             </Header>
             <Content style={{ backgroundImage: "url('/assets/background.jpeg')", backgroundSize: 'cover', display: "flex", flexDirection: 'row', justifyContent: 'center', alignItems: 'start', padding: '15px 0px', height: '94vh' }}>
                 <Switch>
-                    <Route path="/auth/login" component={LoginPage} exact/>
-                    <Route path="/auth/register" component={RegisterPage} exact/>
+                    <Route path="/auth/login" component={LoginPage} exact />
+                    <Route path="/auth/register" component={RegisterPage} exact />
                     <Redirect to="/auth/login" exact />
                 </Switch>
             </Content>
