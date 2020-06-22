@@ -3,6 +3,7 @@ import Title from 'antd/lib/typography/Title';
 import LoginPage from '../pages/AuthPage/Login';
 import RegisterPage from '../pages/AuthPage/Register';
 import { NavLink, Switch, Route, useLocation, Redirect } from 'react-router-dom';
+import { authRoutes } from '../config/routers';
 const { Layout, Menu, Avatar } = require("antd");
 
 const { Header, Content } = Layout;
@@ -23,23 +24,29 @@ const AuthNavigation = () => {
                     <Avatar src="/assets/fashion_logo.png" shape="square" />
                     <Title style={{ color: "white", paddingLeft: 10, paddingTop: 10 }} level={4}>Fashion Shop</Title>
                 </div>
-                <Menu theme="dark" mode="horizontal" defaultSelectedKeys={["1"]}>
-                    <Menu.Item key="1">
-                        <NavLink to="/auth/login">Đăng nhập</NavLink>
-                    </Menu.Item>
-                    <Menu.Item key="2">
-                        <NavLink to="/auth/register">Đăng ký</NavLink>
-                    </Menu.Item>
+                <Menu theme="dark" mode="horizontal" defaultSelectedKeys={["0"]}>
+                    {
+                        authRoutes.map((data, index) => {
+                            return (
+                                <Menu.Item key={index}>
+                                    <NavLink to={data.link}>
+                                        {data.name}
+                                    </NavLink>
+                                </Menu.Item>
+                            );
+                        })
+                    }
                 </Menu>
             </Header>
             <Content style={{ backgroundImage: "url('/assets/background.jpeg')", backgroundSize: 'cover', display: "flex", flexDirection: 'row', justifyContent: 'center', alignItems: 'start', padding: '15px 0px', height: '94vh' }}>
                 <Switch>
-                    <Route path="/auth/login" exact>
-                        <LoginPage/>
-                    </Route>
-                    <Route path="/auth/register" exact>
-                        <RegisterPage/>
-                    </Route>
+                    {
+                        authRoutes.map((data, index) => {
+                            return (
+                                <Route key={index} path={data.path} component={data.component} exact />
+                            );
+                        })
+                    }
                     <Redirect to="/auth/login" exact />
                 </Switch>
             </Content>

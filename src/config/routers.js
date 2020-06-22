@@ -8,6 +8,8 @@ import React from 'react';
 import TableRedash from '../pages/table/index';
 import Chart from '../pages/chart/chart';
 import Alert from '../pages/alert/alert';
+import LoginPage from '../pages/AuthPage/Login';
+import RegisterPage from '../pages/AuthPage/Register';
 
 const pageRoutes=[
         {
@@ -33,4 +35,19 @@ const pageRoutes=[
         }
 ];
 
-export default pageRoutes;
+const authRoutes=[
+    {
+        path: "/auth/login",
+        link: "/auth/login",
+        name: "Đăng Nhập",
+        component: LoginPage
+    },
+    {
+        path: "/auth/register",
+        link: "/auth/register",
+        name: "Đăng Ký",
+        component: RegisterPage
+    }
+]
+
+export {pageRoutes, authRoutes};

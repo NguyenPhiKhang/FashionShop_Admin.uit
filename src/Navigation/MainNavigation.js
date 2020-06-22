@@ -4,7 +4,7 @@ import Title from 'antd/lib/typography/Title';
 
 import './MainNavigation.css';
 import { Route, Switch, NavLink, Redirect } from 'react-router-dom';
-import pageRoutes from '../config/routers';
+import { pageRoutes } from '../config/routers';
 
 const { Header, Content, Footer, Sider } = Layout;
 
