@@ -23,7 +23,7 @@ const AuthNavigation = () => {
                     <Avatar src="/assets/fashion_logo.png" shape="square" />
                     <Title style={{ color: "white", paddingLeft: 10, paddingTop: 10 }} level={4}>Fashion Shop</Title>
                 </div>
-                <Menu theme="dark" mode="horizontal" selectedKeys={pathname == "/auth/login" ? "1" : pathname == "/auth/register" ? "2" : ""}>
+                <Menu theme="dark" mode="horizontal" selectedKeys={pathname === "/auth/register" ? "2" : "1"}>
                     <Menu.Item key="1">
                         <NavLink to="/auth/login">Đăng nhập</NavLink>
                     </Menu.Item>
@@ -34,8 +34,12 @@ const AuthNavigation = () => {
             </Header>
             <Content style={{ backgroundImage: "url('/assets/background.jpeg')", backgroundSize: 'cover', display: "flex", flexDirection: 'row', justifyContent: 'center', alignItems: 'start', padding: '15px 0px', height: '94vh' }}>
                 <Switch>
-                    <Route path="/auth/login" component={LoginPage} exact />
-                    <Route path="/auth/register" component={RegisterPage} exact />
+                    <Route path="/auth/login" exact>
+                        <LoginPage/>
+                    </Route>
+                    <Route path="/auth/register" exact>
+                        <RegisterPage/>
+                    </Route>
                     <Redirect to="/auth/login" exact />
                 </Switch>
             </Content>
