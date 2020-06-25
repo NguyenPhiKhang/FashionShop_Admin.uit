@@ -143,7 +143,7 @@ class Demo extends React.Component {
     }
 
     return (
-      <div>
+      <React.Fragment>
         <Form
           layout="inline"
           className="components-table-demo-control-bar"
@@ -233,7 +233,7 @@ class Demo extends React.Component {
           dataSource={state.hasData ? data : null}
           scroll={scroll}
         />
-      </div>
+      </React.Fragment>
     );
   }
 }

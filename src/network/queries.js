@@ -6,6 +6,9 @@ query Login($email: String!, $password: String!) {
       accountId
       token
       tokenExpiration
+      permission{
+        name
+      }
     }
   }
 `;

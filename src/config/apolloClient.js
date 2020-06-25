@@ -4,7 +4,7 @@ import { InMemoryCache, ApolloClient } from 'apollo-boost';
 
 
 const httpLink = createHttpLink({
-    uri: 'http://localhost:8000/graphql',
+    uri: 'https://fashionshopuit-server.azurewebsites.net/graphql',
   });
   
   const authMiddleware = (authToken) =>

@@ -86,8 +86,12 @@ function RegisterPage() {
                     name="email"
                     rules={[
                         {
+                            type: 'email',
+                            message: 'Không đúng định dạng email!'
+                        },
+                        {
                             required: true,
-                            message: 'Không được để trống!',
+                            message: 'Email không được để trống!',
                         },
                     ]}
                     style={{ marginBottom: 10 }}
@@ -100,9 +104,10 @@ function RegisterPage() {
                     rules={[
                         {
                             required: true,
-                            message: 'Không được để trống!',
+                            message: 'Mật khẩu không được để trống!',
                         },
                     ]}
+                    hasFeedback
                     style={{ marginBottom: 10 }}
                 >
                     <Input.Password style={{ borderRadius: 20 }} prefix={<LockOutlined className="site-form-item-icon" />} placeholder="Nhập mật khẩu" />
@@ -113,9 +118,19 @@ function RegisterPage() {
                     rules={[
                         {
                             required: true,
-                            message: 'Không được để trống!',
+                            message: 'Mật khẩu nhập lại không được để trống!',
                         },
+                        ({ getFieldValue }) => ({
+                            validator(rule, value) {
+                              if (!value || getFieldValue('password') === value) {
+                                return Promise.resolve();
+                              }
+                
+                              return Promise.reject('Mật khẩu không trùng khớp!');
+                            },
+                          }),
                     ]}
+                    hasFeedback
                     style={{ marginBottom: 10 }}
                 >
                     <Input.Password style={{ borderRadius: 20 }} prefix={<LockOutlined className="site-form-item-icon" />} placeholder="Nhập lại mật khẩu" />

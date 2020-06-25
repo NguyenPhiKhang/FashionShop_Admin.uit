@@ -7,6 +7,7 @@ import authContext from '../../context/auth-context';
 import { Spin, Form, Input, Button, Checkbox, } from 'antd';
 import Title from 'antd/lib/typography/Title';
 import { LockOutlined, MailOutlined } from '@ant-design/icons';
+import swal from 'sweetalert';
 
 const layout = {
   wrapperCol: { span: 24 },
@@ -16,7 +17,30 @@ function LoginPage() {
   const [formControl] = Form.useForm();
   const context = useContext(authContext);
 
-  const [accountLogin, { loading, data, error }] = useLazyQuery(accountLoginQuery);
+  const [accountLogin, { loading }] = useLazyQuery(accountLoginQuery, {
+    onCompleted: async (data) => {
+      if (data.login.permission.name !== "Admin") {
+        await swal("Đăng nhập không thành công", "Bạn không có quyền Admin", "error");
+        formControl.setFieldsValue({
+          password: ''
+        });
+        return;
+      }
+      await swal("Đăng nhập thành công", "Nhấn để tiếp tục", "success");
+      context.login(
+        data.login.token,
+        data.login.accountId,
+        data.login.tokenExpiration
+      );
+    },
+    onError: (error) => {
+      console.log("error: " + error.message);
+      swal("Đăng nhập không thành công", "Email hoặc mật khẩu không đúng", "error");
+      formControl.setFieldsValue({
+        password: ''
+      });
+    }
+  });
 
   const onFinish = values => {
     console.log('Success:', values);
@@ -37,19 +61,6 @@ function LoginPage() {
   const onFinishFailed = errorInfo => {
     console.log('Failed:', errorInfo);
   };
-
-  if (data) {
-    context.login(
-      data.login.token,
-      data.login.accountId,
-      data.login.tokenExpiration
-    );
-    console.log(data);
-  }
-
-  if (error) {
-    console.log("error: " + error.message);
-  }
 
   if (loading) {
     console.log("Loading: " + loading);
@@ -78,8 +89,12 @@ function LoginPage() {
             name="email"
             rules={[
               {
+                type: 'email',
+                message: 'Không đúng định dạng email!'
+              },
+              {
                 required: true,
-                message: 'Không được để trống!',
+                message: "Email không được để trống!"
               },
             ]}
             style={{ marginBottom: 10 }}
@@ -92,7 +107,7 @@ function LoginPage() {
             rules={[
               {
                 required: true,
-                message: 'Không được để trống!',
+                message: "Mật khẩu không được để trống!"
               },
             ]}
             style={{ marginBottom: 10 }}
