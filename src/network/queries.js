@@ -3,11 +3,16 @@ import gql from 'graphql-tag';
 const accountLoginQuery = gql`
 query Login($email: String!, $password: String!) {
     login(email: $email, password: $password) {
-      accountId
       token
       tokenExpiration
-      permission{
-        name
+      account{
+        _id
+        permission{
+          name
+        }
+        person{
+          name
+        }
       }
     }
   }

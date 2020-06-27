@@ -19,7 +19,7 @@ function LoginPage() {
 
   const [accountLogin, { loading }] = useLazyQuery(accountLoginQuery, {
     onCompleted: async (data) => {
-      if (data.login.permission.name !== "Admin") {
+      if (data.login.account.permission.name !== "Admin") {
         await swal("Đăng nhập không thành công", "Bạn không có quyền Admin", "error");
         formControl.setFieldsValue({
           password: ''
@@ -28,8 +28,9 @@ function LoginPage() {
       }
       await swal("Đăng nhập thành công", "Nhấn để tiếp tục", "success");
       context.login(
+        data.login.account.person.name,
         data.login.token,
-        data.login.accountId,
+        data.login.account._id,
         data.login.tokenExpiration
       );
     },
@@ -75,7 +76,7 @@ function LoginPage() {
           initialValues={{
             remember: true,
             email: '',
-            password: ''
+            password: '',
           }}
           onFinish={onFinish}
           onFinishFailed={onFinishFailed}

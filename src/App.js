@@ -13,21 +13,25 @@ const App = () => {
 
   const [token, setToken] = useState(null);
   const [accountId, setAccountId] = useState(null);
+  const [nameAdmin, setNameAdmin] = useState(null);
 
-  const login = (token, accountId, tokenExpiration) => {
+  const login = (name, token, accountId, tokenExpiration) => {
     setToken(token);
     setAccountId(accountId);
+    setNameAdmin(name);
   };
 
   const logout = () => {
     setToken(null);
     setAccountId(null);
+    setNameAdmin(null);
   };
 
   return (
     <React.Fragment>
       <AuthContext.Provider
         value={{
+          name: nameAdmin,
           token: token,
           accountId: accountId,
           login: login,

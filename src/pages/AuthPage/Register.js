@@ -17,13 +17,13 @@ function RegisterPage() {
 
     const history = useHistory();
     const [formControl] = Form.useForm();
-    const [input, setInput] = useState({email: '', password: '', loading: false});
+    const [input, setInput] = useState({name: '', email: '', password: '', loading: false});
 
     const [getIdPermission] = useLazyQuery(getIdPermissionQuery, {
         onCompleted: (data)=>{
-            console.log(input.email+" "+input.password);
             accountRegister({
                 variables: {
+                    name: input.name,
                     email: input.email,
                     password: input.password,
                     permission_id: data.getIdPermission
@@ -34,7 +34,6 @@ function RegisterPage() {
 
     const [accountRegister] = useMutation(accountRegisterMutation, {
         onCompleted: (data) => {
-            console.log("dataRegister: " + data.createAccount._id);
             setInput({loading: false});
             history.push("/auth/login");
         }, onError: (error) => {
@@ -49,7 +48,7 @@ function RegisterPage() {
             return;
         }
 
-        setInput({email: values.email, password: values.password, loading: true})
+        setInput({name: values.name, email: values.email, password: values.password, loading: true})
 
         getIdPermission({
             variables: {
@@ -72,7 +71,8 @@ function RegisterPage() {
                     permission: "Admin",
                     email: '',
                     password: '',
-                    password_again: ''
+                    password_again: '',
+                    name: ''
                 }}
                 onFinish={onFinish}
                 onFinishFailed={onFinishFailed}
@@ -81,6 +81,18 @@ function RegisterPage() {
             >
                 <Form.Item style={{ marginBottom: 0 }}>
                     <Title level={2} style={{ color: '#4190f7', textAlign: 'center' }}>Đăng Ký</Title>
+                </Form.Item>
+                <Form.Item
+                    name="name"
+                    rules={[
+                        {
+                            required: true,
+                            message: 'Tên không được để trống!',
+                        },
+                    ]}
+                    style={{ marginBottom: 10 }}
+                >
+                    <Input style={{ borderRadius: 20 }} prefix={<MailOutlined className="site-form-item-icon" />} placeholder="Nhập tên" />
                 </Form.Item>
                 <Form.Item
                     name="email"
