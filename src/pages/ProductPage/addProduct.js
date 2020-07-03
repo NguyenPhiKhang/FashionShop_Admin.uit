@@ -1,7 +1,8 @@
 import React from 'react';
-import { Upload, Modal } from 'antd';
+import { Upload, Modal, Button, Form } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import './addProduct.css';
+import TextArea from 'antd/lib/input/TextArea';
 
 function getBase64(file) {
     return new Promise((resolve, reject) => {
@@ -71,26 +72,51 @@ class PicturesWall extends React.Component {
                 <div className="ant-upload-text">Upload</div>
             </div>
         );
+        const onFinish = values => {
+            // console.log(values.text);
+            const a = values.text;
+            console.log(a);
+        };
+
+        const onFinishFailed = errorInfo => {
+            console.log('Failed:', errorInfo);
+        };
         return (
-            <div className="clearfix">
-                <Upload
-                    action="/khang"
-                    listType="picture-card"
-                    fileList={fileList}
-                    onPreview={this.handlePreview}
-                    onChange={this.handleChange}
-                >
-                    {fileList.length >= 8 ? null : uploadButton}
-                </Upload>
-                <Modal
-                    visible={previewVisible}
-                    title={previewTitle}
-                    footer={null}
-                    onCancel={this.handleCancel}
-                >
-                    <img alt="example" style={{ width: '100%' }} src={previewImage} />
-                </Modal>
-            </div>
+            <Form name="basic"
+                initialValues={{
+                    text: ""
+                }}
+                onFinish={onFinish}
+                onFinishFailed={onFinishFailed}>
+                <Form.Item
+                    name="text">
+                    <TextArea rows={4} />
+                </Form.Item>
+                <Form.Item>
+                    <Button type="primary" htmlType="submit">
+                        Submit
+                        </Button>
+                </Form.Item>
+                <Form.Item>
+                    <Upload
+                        action="https://fashionshopuit-server.azurewebsites.net/upload"
+                        listType="picture-card"
+                        fileList={fileList}
+                        onPreview={this.handlePreview}
+                        onChange={this.handleChange}
+                    >
+                        {fileList.length >= 8 ? null : uploadButton}
+                    </Upload>
+                    <Modal
+                        visible={previewVisible}
+                        title={previewTitle}
+                        footer={null}
+                        onCancel={this.handleCancel}
+                    >
+                        <img alt="example" style={{ width: '100%' }} src={previewImage} />
+                    </Modal>
+                </Form.Item>
+            </Form>
         );
     }
 }
