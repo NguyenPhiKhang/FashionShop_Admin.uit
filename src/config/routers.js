@@ -12,7 +12,8 @@ import Reports from '../pages/ReportPage';
 import Settings from '../pages/SettingPage';
 import LoginPage from '../pages/AuthPage/Login';
 import RegisterPage from '../pages/AuthPage/Register';
-import PicturesWall from '../pages/ProductPage/addProduct';
+import TestPage from '../pages/testPage';
+import AddProduct from '../pages/ProductPage/addProduct';
 
 const pageRoutes=[
         {
@@ -27,14 +28,14 @@ const pageRoutes=[
             link: "/categories",
             icon: React.createElement(AppstoreOutlined),
             name: 'Quản lý danh mục',
-            component: PicturesWall
+            component: AddProduct
         },
         {
             path: "/customers",
             link: "/customers",
             icon: React.createElement(TeamOutlined),
             name: 'Quản lý khách hàng',
-            component: Settings
+            component: TestPage
         },
         {
             path: "/reports",

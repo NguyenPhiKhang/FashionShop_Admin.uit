@@ -5,7 +5,52 @@
     font-size: 32px;
 }
 
-.ant-upload-select-picture-card .ant-upload-text {
+.ant-upload-select-picture-card, .ant-upload-text {
     margin-top: 8px;
     color: #666;
+}
+
+.ant-form-item-label {
+    text-align: left;
+    width: 150px;
+}
+
+.ant-form-item-control-input-content {
+    display: flex;
+    align-items: flex-start;
+}
+
+.ant-input-number {
+    width: 150px;
+}
+
+.ant-form-item-explain, .ant-form-item-extra {
+    text-align: left;
+}
+
+.button-close:hover {
+    color: red;
+    border-color: red;
+}
+
+.dynamic-delete-button {
+    cursor: pointer;
+    position: relative;
+    top: 6px;
+    font-size: 18px;
+    color: #d9d9d9;
+    transition: all 0.3s;
+}
+
+.dynamic-delete-button:hover {
+    color: #ff8080;
+}
+
+.button-delete-image:hover{
+    background-color: #f2f2f2
+}
+
+.dynamic-delete-button[disabled] {
+    cursor: not-allowed;
+    opacity: 0.5;
 }

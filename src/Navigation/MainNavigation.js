@@ -5,6 +5,7 @@ import Title from 'antd/lib/typography/Title';
 import './MainNavigation.css';
 import { Route, Switch, NavLink, Redirect } from 'react-router-dom';
 import { pageRoutes } from '../config/routers';
+import AddProduct from '../pages/ProductPage/addProduct';
 
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -49,8 +50,8 @@ const MainNavigation = () => {
         </Menu>
       </Sider>
       <Layout className="site-layout" style={{ marginLeft: collapsed ? 80 : 200 }}>
-        <Header className="site-layout-background" style={{ paddingLeft: 0, position: 'fixed', width: '100vw', boxShadow: '0 4px #f0f1f2', zIndex: 2 }} />
-        <Content style={{ margin: '16px 16px 0', overflow: 'initial', paddingTop: 80 }}>
+        <Header style={{ paddingLeft:0, position: 'fixed', width: '100vw', boxShadow: '0 4px #f0f1f2', zIndex: 2, backgroundColor: '#fff' }} />
+        <Content style={{  overflow: 'initial', paddingTop: 80 }}>
           <div className="site-layout-background" style={{ padding: 24, textAlign: 'center' }}>
             <Switch>
               {
@@ -60,6 +61,7 @@ const MainNavigation = () => {
                   );
                 })
               }
+              <Route key="addPro" path="/products/AddProduct" component={AddProduct}/>
               <Redirect to="/products" exact />
             </Switch>
           </div>
