@@ -172,7 +172,7 @@ const AddProduct = (props) => {
         await Promise.all(values.attribute.map(att => {
             const a = {
                 color_id: typeof (att.color) === "undefined" ? null : att.color,
-                size_id: typeof (att.size) === "undefined" ? null : att.size[1],
+                size_id: (typeof (att.size) === "undefined" || att.size.length===0) ? null : att.size[1],
                 amount: att.amount
             }
             optionamounts.push(a);
