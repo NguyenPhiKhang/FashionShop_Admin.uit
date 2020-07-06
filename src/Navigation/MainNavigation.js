@@ -51,7 +51,7 @@ const MainNavigation = () => {
       </Sider>
       <Layout className="site-layout" style={{ marginLeft: collapsed ? 80 : 200 }}>
         <Header style={{ paddingLeft:0, position: 'fixed', width: '100vw', boxShadow: '0 4px #f0f1f2', zIndex: 2, backgroundColor: '#fff' }} />
-        <Content style={{  overflow: 'initial', paddingTop: 80 }}>
+        <Content style={{  overflow: 'initial', paddingTop: 60 }}>
           <div className="site-layout-background" style={{ padding: 24, textAlign: 'center' }}>
             <Switch>
               {

@@ -27,14 +27,14 @@ const pageRoutes=[
             path: "/categories",
             link: "/categories",
             icon: React.createElement(AppstoreOutlined),
-            name: 'Quản lý danh mục',
+            name: 'Quản lý khách hàng',
             component: AddProduct
         },
         {
             path: "/customers",
             link: "/customers",
             icon: React.createElement(TeamOutlined),
-            name: 'Quản lý khách hàng',
+            name: 'Quản lý đặt hàng',
             component: TestPage
         },
         {

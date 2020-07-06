@@ -159,7 +159,7 @@ const AddProduct = (props) => {
             return dataImg.filenames;
         }
         else return [];
-    }  
+    }
 
     const onFinish = async values => {
         setLoadingAdd(true);
@@ -235,19 +235,8 @@ const AddProduct = (props) => {
                                 <Title level={4} style={{ color: '#595959', textAlign: 'left', marginLeft: 10 }}>Thêm sản phẩm</Title>
                             </div>
                         }
-                        extra={[
-                            <Form.Item >
-                                <Button type="primary" htmlType="submit">
-                                    <PlusOutlined />
-                                    Thêm
-                                </Button>
-                                <Button htmlType="button" style={{ margin: '0 8px', }} className="button-close">
-                                    <CloseOutlined />
-                                    Huỷ
-                                </Button>
-                            </Form.Item>
-                        ]} />
-                    <Divider style={{ margin: "15px 0px" }} />
+                    />
+                    <Divider style={{ margin: '15px 0px' }} />
                     <Form.Item
                         name="name"
                         label="Tên: "
@@ -446,9 +435,28 @@ const AddProduct = (props) => {
                             </div>
                         </div>
                     </div>
+                    <Divider style={{ margin: '15px 0px' }} />
+                    <div className="ant-row ant-form-item">
+                        <div className="ant-col ant-form-item-lable" style={{ marginRight: 150 }}>
+                        </div>
+                        <div className="ant-col ant-form-item-control">
+                            <div className="ant-form-item-control-input">
+                                <div className="ant-form-item-control-input-content">
+                                    <Button type="primary" htmlType="submit">
+                                        <PlusOutlined />
+                                    Thêm
+                                </Button>
+                                    <Button htmlType="button" style={{ margin: '0 8px', }} className="button-close">
+                                        <CloseOutlined />
+                                    Huỷ
+                                </Button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </Form>
             </Spin>
-        </div>
+        </div >
     );
 };
 
