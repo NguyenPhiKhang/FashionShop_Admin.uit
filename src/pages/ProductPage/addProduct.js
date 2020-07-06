@@ -324,6 +324,7 @@ const AddProduct = (props) => {
                                                         {...field}
                                                         name={[field.name, 'color']}
                                                         fieldKey={[field.fieldKey, 'color']}
+                                                        rules={[{ required: true, message: 'Vui lòng nhập màu' }]}
                                                     >
                                                         <Select style={{ width: 120 }} allowClear placeholder="Màu sắc">
                                                             {
@@ -346,7 +347,7 @@ const AddProduct = (props) => {
                                                         fieldKey={[field.fieldKey, 'amount']}
                                                         rules={[{ required: true, message: 'Vui lòng nhập số lượng' }]}
                                                     >
-                                                        <InputNumber min={1} placeholder="Số lượng" />
+                                                        <InputNumber min={0} placeholder="Số lượng" />
                                                     </Form.Item>
 
                                                     {fields.length > 1 ? (
