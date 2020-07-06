@@ -149,7 +149,7 @@ const AddProduct = (props) => {
             data.append('multi-files', img.filename);
         }));
 
-        const res = await fetch('http://localhost:8000/upload', {
+        const res = await fetch('https://fashionshopuit-server.azurewebsites.net/upload', {
             method: 'POST',
             body: data
         });
