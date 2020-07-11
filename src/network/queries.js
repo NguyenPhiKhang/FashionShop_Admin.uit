@@ -63,4 +63,64 @@ query GetAllAttribute{
 	}
 }
 `;
-export {accountLoginQuery, getPermissionQuery, getIdPermissionQuery, getAllCategories, getAllAttribute};
+
+const getAllProduct = gql`
+query GetProduct($pageNumber: Int, $product_ids: [ID], ){
+  getProduct(pageNumber: $pageNumber, product_ids: $product_ids,){
+    key: _id
+    name
+    product_code
+    img_url
+    price
+    promotion_percent
+    final_price
+    stock_status
+    categories{
+    category_level1{
+    name
+    }
+    category_level2{
+    name
+    }
+    category_level3{
+    name
+    }
+    }
+    record_status
+    option_amount{
+    amount
+    }
+  }
+}
+`;
+
+const searchProductQuery = gql`
+query SearchProduct($text: String!, $pageNumber: Int!){
+  searchProduct(text: $text, pageNumber: $pageNumber){
+    key: _id
+    name
+    product_code
+    img_url
+    price
+    promotion_percent
+    final_price
+    stock_status
+    categories{
+    category_level1{
+    name
+    }
+    category_level2{
+    name
+    }
+    category_level3{
+    name
+    }
+    }
+    record_status
+    option_amount{
+    amount
+    }
+  }
+}
+`;
+export {accountLoginQuery, getPermissionQuery, getIdPermissionQuery, getAllCategories, getAllAttribute, getAllProduct, searchProductQuery};

@@ -1,252 +1,189 @@
-import React from 'react';
-import { Table, Radio, Form, Switch, Button } from 'antd';
-import { DownOutlined, PlusCircleFilled } from '@ant-design/icons';
+import React, { useEffect, useState } from 'react';
+import { Table, Radio, Form, Switch, Button, Pagination, Row } from 'antd';
+import { DownOutlined, PlusCircleFilled, EditFilled, DeleteFilled, EyeFilled } from '@ant-design/icons';
+import { useQuery, useLazyQuery } from '@apollo/react-hooks';
+import { getAllProduct, searchProductQuery } from '../../network/queries';
+import { useHistory } from 'react-router-dom';
+import Search from 'antd/lib/input/Search';
 
 const columns = [
     {
-        title: 'Name',
+        title: 'Mã',
+        dataIndex: 'product_code',
+        key: 'code',
+    },
+    {
+        title: 'Tên',
         dataIndex: 'name',
+        key: 'name'
+        //sorter: (a, b) => a.age - b.age,
     },
     {
-        title: 'Age',
-        dataIndex: 'age',
-        sorter: (a, b) => a.age - b.age,
+        title: 'Giá gốc',
+        dataIndex: 'price',
+        key: 'price'
     },
     {
-        title: 'Address',
-        dataIndex: 'address',
-        filters: [
-            {
-                text: 'London',
-                value: 'London',
-            },
-            {
-                text: 'New York',
-                value: 'New York',
-            },
-        ],
-        onFilter: (value, record) => record.address.indexOf(value) === 0,
+        title: 'Giảm giá',
+        dataIndex: 'promotion_percent',
+        key: 'percent',
     },
     {
-        title: 'Action',
-        key: 'action',
-        sorter: true,
-        render: () => (
-            <span>
-                <a href="/#" style={{ marginRight: 16 }}>Delete</a>
-                <a href="/#" className="ant-dropdown-link">
-                    More actions <DownOutlined />
-                </a>
-            </span>
-        ),
+        title: "Giá cuối cùng",
+        dataIndex: "final_price",
+        key: 'final_price'
     },
+    {
+        title: "Số lượng",
+        dataIndex: "option_amount",
+        key: 'amount',
+        render: am => {
+            let amount = 0;
+            am.map(a => {
+                amount += a.amount;
+            });
+            return <span>{amount}</span>
+        },
+        sorter: (a, b) => {
+            let amounta = 0;
+            let amountb = 0;
+            a.option_amount.map(am => {
+                amounta += am.amount;
+            });
+            b.option_amount.map(am => {
+                amountb += am.amount;
+            });
+
+            return amounta - amountb;
+        },
+        // sortDirections: ['descend'],
+    },
+    {
+        title: "Ảnh đại diện",
+        dataIndex: "img_url",
+        key: 'img_url',
+        render: img => <img style={{ width: 30, height: 40 }} src={`https://fashionshopuit-server.azurewebsites.net/image/${img}`} />
+    },
+    {
+        title: "Danh mục",
+        dataIndex: "categories",
+        key: 'category',
+        render: cats => <span>{cats.category_level1.name}/{cats.category_level2.name}/{cats.category_level3.name}</span>
+    },
+    {
+        title: "Trạng thái",
+        dataIndex: "stock_status",
+        key: 'stock',
+        render: stock => <span>{stock ? "Còn hàng" : "Hết hàng"}</span>
+    }
 ];
 
-const data = [];
-for (let i = 1; i <= 10; i++) {
-    data.push({
-        key: i,
-        name: 'John Brown',
-        age: `${i}2`,
-        address: `New York No. ${i} Lake Park`,
-        description: `My name is John Brown, I am ${i}2 years old, living in New York No. ${i} Lake Park.`,
-    });
-}
-
-const expandable = { expandedRowRender: record => <p>{record.description}</p> };
-const title = () => 'Here is title';
-const showHeader = true;
-const footer = () => 'Here is footer';
 const pagination = { position: 'bottom' };
 
-class ListProducts extends React.Component {
+const ListProducts = () => {
 
-    constructor(props) {
-        super(props);
-        this.state = {
-            bordered: false,
-            loading: false,
-            pagination,
-            size: 'default',
-            expandable,
-            title: undefined,
-            showHeader,
-            footer,
-            rowSelection: {},
-            scroll: undefined,
-            hasData: true,
-            tableLayout: undefined,
-            top: 'none',
-            bottom: 'bottomRight',
-        };
+    // const [loading, setLoading] = useState(false);
+    const [paging, setPaging] = useState(1);
+    const history = useHistory();
+    const [data, setDatas] = useState([]);
+    const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+    const [allProduct,{loading: LoadingProduct}] = useLazyQuery(getAllProduct, {
+        onCompleted: async (data) => {
+            const d = await data.getProduct;
+            // setLoading(false);
+            setDatas(d);
+        }
+    });
+
+    const [searchProduct, {loading: LoadingSearch}] = useLazyQuery(searchProductQuery, {
+        onCompleted: async (data) => {
+            const d = await data.searchProduct;
+            // setLoading(false);
+            setDatas(d);
+        }
+    });
+
+    useEffect(() => {
+        // setLoading(true);
+        allProduct({
+            variables: {
+                pageNumber: paging,
+                product_ids: []
+            }
+        })
+    }, [paging]);
+
+    const onSelectChange = selectedRow => {
+        
+        console.log('selectedRowKeys changed: ', selectedRow);
+        setSelectedRowKeys(selectedRow);
     }
 
-    handleToggle = prop => enable => {
-        this.setState({ [prop]: enable });
+    const rowSelection = {
+        selectedRowKeys,
+        onChange: onSelectChange,
     };
 
-    handleSizeChange = e => {
-        this.setState({ size: e.target.value });
-    };
-
-    handleTableLayoutChange = e => {
-        this.setState({ tableLayout: e.target.value });
-    };
-
-    handleExpandChange = enable => {
-        this.setState({ expandable: enable ? expandable : undefined });
-    };
-
-    handleEllipsisChange = enable => {
-        this.setState({ ellipsis: enable });
-    };
-
-    handleTitleChange = enable => {
-        this.setState({ title: enable ? title : undefined });
-    };
-
-    handleHeaderChange = enable => {
-        this.setState({ showHeader: enable ? showHeader : false });
-    };
-
-    handleFooterChange = enable => {
-        this.setState({ footer: enable ? footer : undefined });
-    };
-
-    handleRowSelectionChange = enable => {
-        this.setState({ rowSelection: enable ? {} : undefined });
-    };
-
-    handleYScrollChange = enable => {
-        this.setState({ yScroll: enable });
-    };
-
-    handleXScrollChange = e => {
-        this.setState({ xScroll: e.target.value });
-    };
-
-    handleDataChange = hasData => {
-        this.setState({ hasData });
-    };
-
-    render() {
-        const { xScroll, yScroll, ...state } = this.state;
-        const scroll = {};
-        if (yScroll) {
-            scroll.y = 240;
+    const searchProducts = text => {
+        if (text !== null&&text.trim() !== "") {
+            searchProduct({
+                variables: {
+                    pageNumber: paging,
+                    text: text.trim()
+                }
+            })
         }
-        if (xScroll) {
-            scroll.x = '100vw';
-        }
+    }
 
-        const tableColumns = columns.map(item => ({ ...item, ellipsis: state.ellipsis }));
-        if (xScroll === 'fixed') {
-            tableColumns[0].fixed = true;
-            tableColumns[tableColumns.length - 1].fixed = 'right';
-        }
-        return (
-            <div style={{ backgroundColor: '#fff', padding: 16 }}>
-                <div style={{ width: '100%', height: 50, backgroundColor: 'white', marginBottom: 10, display: 'flex', alignItems: 'center' }}>
-                    <Button style={{ display: 'flex', justifyContent: 'start', alignItems: 'center' }} onClick={() => {
-                        this.props.history.push("/products/addProduct")
-                    }}>
-                        {/* <NavLink to="/products/addProduct"> */}
-                            <PlusCircleFilled style={{ marginRight: 5 }} />Thêm
-                        {/* </NavLink> */}
-                    </Button>
-                </div>
-                <Form
-                    layout="inline"
-                    className="components-table-demo-control-bar"
-                    style={{ marginBottom: 16 }}
-                >
-                    <Form.Item label="Bordered">
-                        <Switch checked={state.bordered} onChange={this.handleToggle('bordered')} />
-                    </Form.Item>
-                    <Form.Item label="loading">
-                        <Switch checked={state.loading} onChange={this.handleToggle('loading')} />
-                    </Form.Item>
-                    <Form.Item label="Title">
-                        <Switch checked={!!state.title} onChange={this.handleTitleChange} />
-                    </Form.Item>
-                    <Form.Item label="Column Header">
-                        <Switch checked={!!state.showHeader} onChange={this.handleHeaderChange} />
-                    </Form.Item>
-                    <Form.Item label="Footer">
-                        <Switch checked={!!state.footer} onChange={this.handleFooterChange} />
-                    </Form.Item>
-                    <Form.Item label="Expandable">
-                        <Switch checked={!!state.expandable} onChange={this.handleExpandChange} />
-                    </Form.Item>
-                    <Form.Item label="Checkbox">
-                        <Switch checked={!!state.rowSelection} onChange={this.handleRowSelectionChange} />
-                    </Form.Item>
-                    <Form.Item label="Fixed Header">
-                        <Switch checked={!!yScroll} onChange={this.handleYScrollChange} />
-                    </Form.Item>
-                    <Form.Item label="Has Data">
-                        <Switch checked={!!state.hasData} onChange={this.handleDataChange} />
-                    </Form.Item>
-                    <Form.Item label="Ellipsis">
-                        <Switch checked={!!state.ellipsis} onChange={this.handleEllipsisChange} />
-                    </Form.Item>
-                    <Form.Item label="Size">
-                        <Radio.Group value={state.size} onChange={this.handleSizeChange}>
-                            <Radio.Button value="default">Default</Radio.Button>
-                            <Radio.Button value="middle">Middle</Radio.Button>
-                            <Radio.Button value="small">Small</Radio.Button>
-                        </Radio.Group>
-                    </Form.Item>
-                    <Form.Item label="Table Scroll">
-                        <Radio.Group value={xScroll} onChange={this.handleXScrollChange}>
-                            <Radio.Button value={undefined}>Unset</Radio.Button>
-                            <Radio.Button value="scroll">Scroll</Radio.Button>
-                            <Radio.Button value="fixed">Fixed Columns</Radio.Button>
-                        </Radio.Group>
-                    </Form.Item>
-                    <Form.Item label="Table Layout">
-                        <Radio.Group value={state.tableLayout} onChange={this.handleTableLayoutChange}>
-                            <Radio.Button value={undefined}>Unset</Radio.Button>
-                            <Radio.Button value="fixed">Fixed</Radio.Button>
-                        </Radio.Group>
-                    </Form.Item>
-                    <Form.Item label="Pagination Top">
-                        <Radio.Group
-                            value={this.state.top}
-                            onChange={e => {
-                                this.setState({ top: e.target.value });
-                            }}
-                        >
-                            <Radio.Button value="topLeft">TopLeft</Radio.Button>
-                            <Radio.Button value="topCenter">TopCenter</Radio.Button>
-                            <Radio.Button value="topRight">TopRight</Radio.Button>
-                            <Radio.Button value="none">None</Radio.Button>
-                        </Radio.Group>
-                    </Form.Item>
-                    <Form.Item label="Pagination Bottom">
-                        <Radio.Group
-                            value={this.state.bottom}
-                            onChange={e => {
-                                this.setState({ bottom: e.target.value });
-                            }}
-                        >
-                            <Radio.Button value="bottomLeft">BottomLeft</Radio.Button>
-                            <Radio.Button value="bottomCenter">BottomCenter</Radio.Button>
-                            <Radio.Button value="bottomRight">BottomRight</Radio.Button>
-                            <Radio.Button value="none">None</Radio.Button>
-                        </Radio.Group>
-                    </Form.Item>
-                </Form>
-                <Table
-                    {...this.state}
-                    pagination={{ position: [this.state.top, this.state.bottom] }}
-                    columns={tableColumns}
-                    dataSource={state.hasData ? data : null}
-                    scroll={scroll}
-                />
+    return (
+        <div>
+            <div style={{ padding: 10, width: '100%', height: 50, backgroundColor: 'white', marginBottom: 15, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <Row>
+                <Button style={{ display: 'flex', justifyContent: 'start', alignItems: 'center', marginRight: 5 }} onClick={() => {
+                    history.push("/products/addProduct")
+                }}>
+                    <PlusCircleFilled style={{ marginRight: 5 }} />Thêm
+                </Button>
+                <Button style={{ display: 'flex', justifyContent: 'start', alignItems: 'center', marginRight: 5 }} onClick={() => {
+                    // history.push("/products/addProduct")
+                }}>
+                    <EditFilled style={{ marginRight: 5 }} />Sửa
+                </Button>
+                <Button style={{ display: 'flex', justifyContent: 'start', alignItems: 'center', marginRight: 5 }} onClick={() => {
+                    // history.push("/products/addProduct")
+                }}>
+                    <DeleteFilled style={{ marginRight: 5 }} />Xoá
+                </Button>
+                <Button style={{ display: 'flex', justifyContent: 'start', alignItems: 'center', marginRight: 5 }} onClick={() => {
+                    // history.push("/products/addProduct")
+                }}>
+                    <EyeFilled style={{ marginRight: 5 }} />Xem chi tiết
+                </Button>
+                </Row>
+                <Button style={{ display: 'flex', justifyContent: 'start', alignItems: 'center', marginRight: 5,}} onClick={() => {
+                    // history.push("/products/addProduct")
+                }}>
+                    <EyeFilled style={{ marginRight: 5 }} />Làm mới
+                </Button>
             </div>
-        );
-    }
+
+            <div style={{ padding: '20px 10px', backgroundColor: '#fff' }}>
+                <Search placeholder="Tìm kiếm sản phẩm theo tên" onSearch={searchProducts} enterButton />
+                <Table
+                    rowSelection={true}
+                    columns={columns}
+                    loading={LoadingProduct || LoadingSearch}
+                    dataSource={data}
+                    rowSelection={rowSelection}
+                    pagination={false}
+                />
+                <div style={{display: 'flex', flexDirection: 'row-reverse'}}>
+                <Pagination style={{marginTop: 15}} defaultCurrent={1} total={100} size="small"/>
+                </div>
+            </div>
+        </div>
+    );
+    // }
 }
 
 export default ListProducts;

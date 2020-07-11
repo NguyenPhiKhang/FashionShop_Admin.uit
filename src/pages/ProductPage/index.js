@@ -7,7 +7,7 @@ import ListProducts from './ListProducts';
 const Product = () => {
   return (
     <div style={{ width: '100%' }}>
-      <div style={{ backgroundColor: '#fff' }}>
+      <div>
         <Switch>
           <Route exact path="/products" component={ListProducts} />
           <Route exact path="/products/addProduct" component={AddProduct} />
