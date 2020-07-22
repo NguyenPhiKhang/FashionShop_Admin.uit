@@ -33,7 +33,7 @@ const getIdPermissionQuery = gql`
   }
 `;
 
-const getAllCategories = gql`
+const getAllCategoriesQuery = gql`
 query GetAllCategories{
   getAllCategory(level: 1){
     value:category_code
@@ -50,7 +50,7 @@ query GetAllCategories{
 }
 `;
 
-const getAllAttribute = gql`
+const getAllAttributeQuery = gql`
 query GetAllAttribute{
   getAllAttribute{
     value: _id
@@ -64,31 +64,75 @@ query GetAllAttribute{
 }
 `;
 
-const getAllProduct = gql`
-query GetProduct($pageNumber: Int, $product_ids: [ID], ){
-  getProduct(pageNumber: $pageNumber, product_ids: $product_ids,){
+const getAllProductQuery = gql`
+query GetProduct($pageNumber: Int){
+  getProduct(pageNumber: $pageNumber){
+    total_record
+    products{
+      key: _id
+      name
+      product_code
+      img_url
+      price
+      promotion_percent
+      final_price
+      stock_status
+      categories{
+      category_level1{
+        name
+      }
+      category_level2{
+        name
+      }
+      category_level3{
+        name
+      }
+      }
+      record_status
+      option_amount{
+      amount
+      }
+    }
+  }
+}
+`;
+
+const getProductQuery = gql`
+query GetProductById($id: ID!){
+  getProductById(id: $id){
     key: _id
     name
     product_code
-    img_url
+    images
     price
     promotion_percent
     final_price
     stock_status
+    is_freeship
+    description
+    weight
     categories{
     category_level1{
-    name
+      name
     }
     category_level2{
-    name
+      name
     }
     category_level3{
-    name
+      name
     }
     }
     record_status
     option_amount{
-    amount
+      option_color{
+        _id
+        name
+      }
+      option_size{
+        _id
+        name
+      }
+      amount
     }
   }
 }
@@ -97,30 +141,33 @@ query GetProduct($pageNumber: Int, $product_ids: [ID], ){
 const searchProductQuery = gql`
 query SearchProduct($text: String!, $pageNumber: Int!){
   searchProduct(text: $text, pageNumber: $pageNumber){
-    key: _id
-    name
-    product_code
-    img_url
-    price
-    promotion_percent
-    final_price
-    stock_status
-    categories{
-    category_level1{
-    name
-    }
-    category_level2{
-    name
-    }
-    category_level3{
-    name
-    }
-    }
-    record_status
-    option_amount{
-    amount
-    }
+    total_record
+    products{
+      key: _id
+      name
+      product_code
+      img_url
+      price
+      promotion_percent
+      final_price
+      stock_status
+      categories{
+      category_level1{
+      name
+      }
+      category_level2{
+      name
+      }
+      category_level3{
+      name
+      }
+      }
+      record_status
+      option_amount{
+      amount
+      }
+      }
   }
 }
 `;
-export {accountLoginQuery, getPermissionQuery, getIdPermissionQuery, getAllCategories, getAllAttribute, getAllProduct, searchProductQuery};
+export { accountLoginQuery, getPermissionQuery, getIdPermissionQuery, getAllCategoriesQuery, getAllAttributeQuery, getAllProductQuery, searchProductQuery, getProductQuery };

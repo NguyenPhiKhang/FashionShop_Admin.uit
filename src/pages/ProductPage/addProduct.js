@@ -17,7 +17,7 @@ import { MinusCircleOutlined, PlusOutlined, CloseOutlined, DeleteOutlined } from
 import Title from 'antd/lib/typography/Title';
 import './addProduct.css';
 import TextArea from 'antd/lib/input/TextArea';
-import { getAllCategories, getAllAttribute } from '../../network/queries';
+import { getAllCategoriesQuery, getAllAttributeQuery } from '../../network/queries';
 import { createProductMutation } from '../../network/mutations';
 import { useQuery, useMutation } from '@apollo/react-hooks';
 import Modal from 'antd/lib/modal/Modal';
@@ -70,12 +70,12 @@ function getBase64(file) {
 
 const AddProduct = (props) => {
     const [form] = Form.useForm();
-    useQuery(getAllCategories, {
+    useQuery(getAllCategoriesQuery, {
         onCompleted: (data) => {
             setOptionCats(data.getAllCategory);
         }
     });
-    useQuery(getAllAttribute, {
+    useQuery(getAllAttributeQuery, {
         onCompleted: async (data) => {
             await Promise.all(data.getAllAttribute.map(async value => {
                 if (value.label === "Màu sắc") {
@@ -287,7 +287,7 @@ const AddProduct = (props) => {
                                 <InputNumber min={0} />
                             </Form.Item>
 
-                            <Form.Item name="freeship" label="Miễn phí vận chuyển: ">
+                            <Form.Item name="freeship" label="Miễn phí vận chuyển: " valuePropName="checked">
                                 <Switch />
                             </Form.Item>
                         </Space>

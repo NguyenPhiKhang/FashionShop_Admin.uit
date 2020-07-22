@@ -23,4 +23,10 @@ mutation CreateProduct($name: String!, $category_id: String!, $price: Float!, $p
 }
 `;
 
-export {accountRegisterMutation, createProductMutation};
+const deleteProductsMutation = gql`
+mutation DeleteProduct($ids: [ID]!){
+  deleteProduct(ids: $ids)
+}
+`;
+
+export {accountRegisterMutation, createProductMutation, deleteProductsMutation};

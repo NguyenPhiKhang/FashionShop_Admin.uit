@@ -7,6 +7,7 @@ import { Route, Switch, NavLink, Redirect } from 'react-router-dom';
 import { pageRoutes } from '../config/routers';
 import AddProduct from '../pages/ProductPage/addProduct';
 import { DownOutlined } from '@ant-design/icons';
+import DetailProduct from '../pages/ProductPage/detailProduct';
 
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -89,7 +90,8 @@ const MainNavigation = () => {
                   );
                 })
               }
-              <Route key="addPro" path="/products/AddProduct" component={AddProduct} />
+              <Route key="addProd" path="/products/addProduct" component={AddProduct} />
+              <Route key="detailProd" path="/products/detailProduct/:id" component={DetailProduct} />
               <Redirect to="/products" exact />
             </Switch>
           </div>

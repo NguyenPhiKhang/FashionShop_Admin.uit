@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { Table, Radio, Form, Switch, Button, Pagination, Row } from 'antd';
-import { DownOutlined, PlusCircleFilled, EditFilled, DeleteFilled, EyeFilled } from '@ant-design/icons';
+import { RedoOutlined, PlusCircleFilled, EditFilled, DeleteFilled, EyeFilled } from '@ant-design/icons';
 import { useQuery, useLazyQuery } from '@apollo/react-hooks';
-import { getAllProduct, searchProductQuery } from '../../network/queries';
+import { getAllProductQuery, searchProductQuery } from '../../network/queries';
 import { useHistory } from 'react-router-dom';
 import Search from 'antd/lib/input/Search';
+import swal from 'sweetalert';
 
 const columns = [
     {
@@ -78,43 +79,60 @@ const columns = [
     }
 ];
 
-const pagination = { position: 'bottom' };
-
 const ListProducts = () => {
 
     // const [loading, setLoading] = useState(false);
     const [paging, setPaging] = useState(1);
+    const [total_record, setTotalRecord] = useState(0);
+    const [textSearch, setTextSearch] = useState('');
     const history = useHistory();
     const [data, setDatas] = useState([]);
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
-    const [allProduct,{loading: LoadingProduct}] = useLazyQuery(getAllProduct, {
+    const [allProduct, { loading: LoadingProduct, refetch: refetchAllProduct }] = useLazyQuery(getAllProductQuery, {
+        onCompleted: async (datas) => {
+            const d = await datas.getProduct.products;
+            console.log(d);
+            if (total_record !== datas.getProduct.total_record)
+                setTotalRecord(datas.getProduct.total_record);
+            setDatas(d);
+        },
+    });
+
+    const [searchProduct, { loading: LoadingSearch, refetch: refetchSearch }] = useLazyQuery(searchProductQuery, {
         onCompleted: async (data) => {
-            const d = await data.getProduct;
-            // setLoading(false);
+            const d = await data.searchProduct.products;
+            if (total_record !== data.searchProduct.total_record)
+                setTotalRecord(data.searchProduct.total_record);
+            const ds = await [...d];
             setDatas(d);
         }
     });
 
-    const [searchProduct, {loading: LoadingSearch}] = useLazyQuery(searchProductQuery, {
-        onCompleted: async (data) => {
-            const d = await data.searchProduct;
-            // setLoading(false);
-            setDatas(d);
+    const fetchProduct = () => {
+        console.log("test");
+        if (textSearch === "") {
+            allProduct({
+                variables: {
+                    pageNumber: paging
+                }
+            });
         }
-    });
+        else {
+            searchProduct({
+                variables: {
+                    pageNumber: paging,
+                    text: textSearch
+                }
+            })
+        }
+    }
 
     useEffect(() => {
-        // setLoading(true);
-        allProduct({
-            variables: {
-                pageNumber: paging,
-                product_ids: []
-            }
-        })
-    }, [paging]);
+        fetchProduct();
+    }, [paging, textSearch, data]);
 
     const onSelectChange = selectedRow => {
-        
+
         console.log('selectedRowKeys changed: ', selectedRow);
         setSelectedRowKeys(selectedRow);
     }
@@ -125,45 +143,58 @@ const ListProducts = () => {
     };
 
     const searchProducts = text => {
-        if (text !== null&&text.trim() !== "") {
-            searchProduct({
-                variables: {
-                    pageNumber: paging,
-                    text: text.trim()
-                }
-            })
-        }
+        if (textSearch !== text.trim()) {
+            setTextSearch(text.trim());
+            setPaging(1);
+        };
+    }
+
+    const showTotal = total => `Tổng cộng: ${total}`;
+
+    const onChangePage = page => {
+        setPaging(page);
     }
 
     return (
         <div>
             <div style={{ padding: 10, width: '100%', height: 50, backgroundColor: 'white', marginBottom: 15, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <Row>
-                <Button style={{ display: 'flex', justifyContent: 'start', alignItems: 'center', marginRight: 5 }} onClick={() => {
-                    history.push("/products/addProduct")
-                }}>
-                    <PlusCircleFilled style={{ marginRight: 5 }} />Thêm
+                    <Button style={{ display: 'flex', justifyContent: 'start', alignItems: 'center', marginRight: 5 }} onClick={() => {
+                        refetchAllProduct();
+                        history.push("/products/addProduct")
+                    }}>
+                        <PlusCircleFilled style={{ marginRight: 5 }} />Thêm
                 </Button>
-                <Button style={{ display: 'flex', justifyContent: 'start', alignItems: 'center', marginRight: 5 }} onClick={() => {
-                    // history.push("/products/addProduct")
-                }}>
-                    <EditFilled style={{ marginRight: 5 }} />Sửa
+                    <Button style={{ display: 'flex', justifyContent: 'start', alignItems: 'center', marginRight: 5 }} onClick={() => {
+                        // history.push("/products/addProduct")
+                    }}>
+                        <EditFilled style={{ marginRight: 5 }} />Sửa
                 </Button>
-                <Button style={{ display: 'flex', justifyContent: 'start', alignItems: 'center', marginRight: 5 }} onClick={() => {
-                    // history.push("/products/addProduct")
-                }}>
-                    <DeleteFilled style={{ marginRight: 5 }} />Xoá
+                    <Button style={{ display: 'flex', justifyContent: 'start', alignItems: 'center', marginRight: 5 }} onClick={() => {
+                        if (selectedRowKeys.length === 0 || selectedRowKeys.length > 1)
+                            swal("Vui lòng chọn ít nhất một sản phẩm để xoá", "Nhấn để tiếp tục", "error");
+                        else {
+                            refetchAllProduct();
+                            history.push(`/products/detailProduct/${selectedRowKeys[0]}`);
+                        }
+                    }}>
+                        <DeleteFilled style={{ marginRight: 5 }} />Xoá
                 </Button>
-                <Button style={{ display: 'flex', justifyContent: 'start', alignItems: 'center', marginRight: 5 }} onClick={() => {
-                    // history.push("/products/addProduct")
-                }}>
-                    <EyeFilled style={{ marginRight: 5 }} />Xem chi tiết
+                    <Button style={{ display: 'flex', justifyContent: 'start', alignItems: 'center', marginRight: 5 }} onClick={async () => {
+                        if (selectedRowKeys.length === 0 || selectedRowKeys.length > 1)
+                            swal("Vui lòng chọn một sản phẩm để xem chi tiết", "Nhấn để tiếp tục", "error");
+                        else {
+                            await refetchAllProduct();
+                            history.push(`/products/detailProduct/${selectedRowKeys[0]}`);
+                        }
+                    }}>
+                        <EyeFilled style={{ marginRight: 5 }} />Xem chi tiết
                 </Button>
                 </Row>
-                <Button style={{ display: 'flex', justifyContent: 'start', alignItems: 'center', marginRight: 5,}} onClick={() => {
-                    // history.push("/products/addProduct")
+                <Button style={{ display: 'flex', justifyContent: 'start', alignItems: 'center', marginRight: 5, }} onClick={() => {
+                    refetchAllProduct();
                 }}>
-                    <EyeFilled style={{ marginRight: 5 }} />Làm mới
+                    <RedoOutlined style={{ marginRight: 5 }} />Làm mới
                 </Button>
             </div>
 
@@ -177,8 +208,8 @@ const ListProducts = () => {
                     rowSelection={rowSelection}
                     pagination={false}
                 />
-                <div style={{display: 'flex', flexDirection: 'row-reverse'}}>
-                <Pagination style={{marginTop: 15}} defaultCurrent={1} total={100} size="small"/>
+                <div style={{ display: 'flex', flexDirection: 'row-reverse' }}>
+                    <Pagination style={{ marginTop: 15 }} current={paging} total={total_record} showSizeChanger={false} showTotal={showTotal} onChange={onChangePage} />
                 </div>
             </div>
         </div>

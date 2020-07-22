@@ -11,7 +11,7 @@ import AuthNavigation from './Navigation/AuthNavigation';
 
 const App = () => {
 
-  const [token, setToken] = useState("");
+  const [token, setToken] = useState("kkk");
   const [accountId, setAccountId] = useState(null);
   const [nameAdmin, setNameAdmin] = useState(null);
 
@@ -29,24 +29,26 @@ const App = () => {
 
   return (
     <React.Fragment>
-      <AuthContext.Provider
-        value={{
-          name: nameAdmin,
-          token: token,
-          accountId: accountId,
-          login: login,
-          logout: logout
-        }}
-      >
-        <ApolloProvider client={useAppApolloClient(token)}>
-          <Switch>
-            {!token && <Route path="/auth" component={AuthNavigation} />}
-            {token && <Route path="/" component={MainNavigation} />}
-            {!token && <Redirect to="/auth/" exact />}
-            {token && <Redirect to="/" exact />}
-          </Switch>
-        </ApolloProvider>
-      </AuthContext.Provider>
+      <div className="container">
+        <AuthContext.Provider
+          value={{
+            name: nameAdmin,
+            token: token,
+            accountId: accountId,
+            login: login,
+            logout: logout
+          }}
+        >
+          <ApolloProvider client={useAppApolloClient(token)}>
+            <Switch>
+              {!token && <Route path="/auth" component={AuthNavigation} />}
+              {token && <Route path="/" component={MainNavigation} />}
+              {!token && <Redirect to="/auth/" exact />}
+              {token && <Redirect to="/" exact />}
+            </Switch>
+          </ApolloProvider>
+        </AuthContext.Provider>
+      </div>
     </React.Fragment>
   );
 }
