@@ -186,6 +186,7 @@ const AddProduct = (props) => {
                 promotion_percent: values.percent,
                 description: values.description,
                 weight: values.weight,
+                is_freeship: values.freeship,
                 images: listImages,
                 option_amount: optionamounts
             }
