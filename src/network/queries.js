@@ -114,12 +114,15 @@ query GetProductById($id: ID!){
     categories{
     category_level1{
       name
+      category_code
     }
     category_level2{
       name
+      category_code
     }
     category_level3{
       name
+      category_code
     }
     }
     record_status
@@ -131,6 +134,7 @@ query GetProductById($id: ID!){
       option_size{
         _id
         name
+        type_option
       }
       amount
     }

@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
     Form,
     Input,
-    Cascader,
-    Select,
-    Button,
+    // Cascader,
+    // Select,
+    // Button,
     // AutoComplete,
     Divider,
     InputNumber,
@@ -13,7 +13,7 @@ import {
     Spin,
     PageHeader,
 } from 'antd';
-import { MinusCircleOutlined, PlusOutlined, CloseOutlined, DeleteOutlined } from '@ant-design/icons';
+// import { MinusCircleOutlined, PlusOutlined, CloseOutlined, DeleteOutlined } from '@ant-design/icons';
 import Title from 'antd/lib/typography/Title';
 import './addProduct.css';
 import TextArea from 'antd/lib/input/TextArea';
@@ -22,8 +22,7 @@ import { useQuery} from '@apollo/react-hooks';
 import Modal from 'antd/lib/modal/Modal';
 import { useHistory, useParams } from 'react-router-dom';
 import "./detailProduct.css";
-
-const { Option } = Select;
+import { httpImage } from '../../utils/util';
 
 const formItemLayout = {
     wrapperCol: {
@@ -36,19 +35,19 @@ const formItemLayout = {
     },
 };
 
-function getBase64(file) {
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = error => reject(error);
-    });
-}
+// function getBase64(file) {
+//     return new Promise((resolve, reject) => {
+//         const reader = new FileReader();
+//         reader.readAsDataURL(file);
+//         reader.onload = () => resolve(reader.result);
+//         reader.onerror = error => reject(error);
+//     });
+// }
 
 const DetailProduct = (props) => {
     const [form] = Form.useForm();
     const { id } = useParams();
-    const {refetch} = useQuery(getProductQuery, {
+    const {loading,refetch} = useQuery(getProductQuery, {
         variables: {
             id: id
         },
@@ -68,7 +67,7 @@ const DetailProduct = (props) => {
             setImages(dt.images);
             setOptionAmount(dt.option_amount);
         }
-    })
+    });
 
     const [optionAmount, setOptionAmount] = useState([]);
     const [images, setImages] = useState([]);
@@ -81,7 +80,7 @@ const DetailProduct = (props) => {
 
     const handlePreview = async file => {
         setPreview({
-            image: `https://fashionshopuit-server.azurewebsites.net/image/${file}`,
+            image: `${httpImage}${file}`,
             visible: true,
             title: file,
         });
@@ -89,7 +88,7 @@ const DetailProduct = (props) => {
 
     return (
         <div style={{ backgroundColor: '#fff', padding: 16 }}>
-            <Spin size="large" spinning={loadingAdd}>
+            <Spin size="large" spinning={loadingAdd||loading}>
                 <Form
                     {...formItemLayout}
                     form={form}
@@ -227,7 +226,7 @@ const DetailProduct = (props) => {
                                                                 width: 92, height: 80, display: 'flex', justifyContent: 'space-between',
                                                                 marginLeft: 8, border: '1px solid #e6e6e6', padding: 5
                                                             }}>
-                                                                <img alt="select" style={{ width: 80, height: '100%' }} src={`https://fashionshopuit-server.azurewebsites.net/image/${file}`} onClick={() => { handlePreview(file) }} />
+                                                                <img alt="select" style={{ width: 80, height: '100%' }} src={`${httpImage}${file}`} onClick={() => { handlePreview(file) }} />
                                                             </div>
                                                         );
                                                     })

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     Form,
     Input,
@@ -13,30 +13,21 @@ import {
     Spin,
     PageHeader,
 } from 'antd';
-import { MinusCircleOutlined, PlusOutlined, CloseOutlined, DeleteOutlined } from '@ant-design/icons';
+import { MinusCircleOutlined, PlusOutlined, CloseOutlined, DeleteOutlined, SaveOutlined } from '@ant-design/icons';
 import Title from 'antd/lib/typography/Title';
 import './addProduct.css';
 import TextArea from 'antd/lib/input/TextArea';
-import { getAllCategoriesQuery, getAllAttributeQuery } from '../../network/queries';
-import { createProductMutation } from '../../network/mutations';
+import { getAllCategoriesQuery, getAllAttributeQuery, getProductQuery } from '../../network/queries';
+import { createProductMutation, updateProductMutation } from '../../network/mutations';
 import { useQuery, useMutation } from '@apollo/react-hooks';
 import Modal from 'antd/lib/modal/Modal';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useParams } from 'react-router-dom';
 import swal from 'sweetalert';
-import { httpUploadImage } from '../../utils/util';
+import { httpUploadImage, httpImage } from '../../utils/util';
 
 const { Option } = Select;
 
 const formItemLayout = {
-    // labelCol: {
-    //     xs: {
-    //         span: 16,
-    //     },
-    //     sm: {
-    //         span: 4,
-    //     },
-    //     // span: 4
-    // },
     wrapperCol: {
         xs: {
             span: 24,
@@ -44,21 +35,8 @@ const formItemLayout = {
         sm: {
             span: 12,
         },
-        // span: 12
     },
 };
-// const tailFormItemLayout = {
-//     wrapperCol: {
-//         xs: {
-//             span: 24,
-//             offset: 0,
-//         },
-//         sm: {
-//             span: 12,
-//             offset: 12,
-//         },
-//     },
-// };
 
 function getBase64(file) {
     return new Promise((resolve, reject) => {
@@ -69,13 +47,55 @@ function getBase64(file) {
     });
 }
 
-const AddProduct = (props) => {
+const EditProduct = (props) => {
     const [form] = Form.useForm();
+    const { id } = useParams();
+
+    const { loading, refetch, networkStatus } = useQuery(getProductQuery, {
+        variables: {
+            id: id
+        },
+        onCompleted: async (data) => {
+            const dt = data.getProductById;
+            console.log(dt);
+            const attrs = await Promise.all(dt.option_amount.map(oa => {
+                if (oa.option_size !== null)
+                    return { amount: oa.amount, color: oa.option_color._id, size: [oa.option_size.type_option, oa.option_size._id] };
+                else return { amount: oa.amount, color: oa.option_color._id, size: null };
+            }));
+
+            setLengthAttr(dt.option_amount.length);
+
+            const imgs = await Promise.all(dt.images.map(img => {
+                return { preview: `${httpImage}${img}`, filename: { name: img }, visible: false };
+            }));
+
+            form.setFieldsValue({
+                name: dt.name,
+                freeship: dt.is_freeship,
+                description: dt.description,
+                price: dt.price,
+                percent: dt.promotion_percent,
+                weight: dt.weight,
+                category: [dt.categories.category_level1.category_code, dt.categories.category_level2.category_code, dt.categories.category_level3.category_code],
+                attribute: attrs
+            });
+
+            setFileList(imgs);
+        },
+        notifyOnNetworkStatusChange: true
+    });
+
+    useEffect(() => {
+        refetch();
+    }, []);
+
     useQuery(getAllCategoriesQuery, {
         onCompleted: (data) => {
             setOptionCats(data.getAllCategory);
         }
     });
+
     useQuery(getAllAttributeQuery, {
         onCompleted: async (data) => {
             await Promise.all(data.getAllAttribute.map(async value => {
@@ -107,10 +127,10 @@ const AddProduct = (props) => {
             }));
         }
     });
-    const [createProduct] = useMutation(createProductMutation, {
+    const [updateProduct] = useMutation(updateProductMutation, {
         onCompleted: data => {
             setLoadingAdd(false);
-            swal(`Thêm ${data.createProduct.name} thành công!`, `ID: ${data.createProduct._id}`, "success");
+            // swal(`Thêm ${data.createProduct.name} thành công!`, `ID: ${data.createProduct._id}`, "success");
         },
         onError: error => {
             setLoadingAdd(false);
@@ -119,12 +139,14 @@ const AddProduct = (props) => {
     });
 
     const [optionCats, setOptionCats] = useState([]);
+    const [lengthAttribute, setLengthAttr] = useState(0);
     const [optionColors, setOptionColors] = useState([]);
     const [optionSizes, setOptionSizes] = useState([]);
     const [fileList, setFileList] = useState([]);
     const [preview, setPreview] = useState({ visible: false, image: '', title: '' });
     const [loadingImage, setLoadingImage] = useState(false);
     const [loadingAdd, setLoadingAdd] = useState(false);
+    const [imgsDelete, setImgsDelete] = useState([]);
     const history = useHistory();
 
     const displayRender = (label) => {
@@ -132,24 +154,31 @@ const AddProduct = (props) => {
     }
     const fileChanged = async (event) => {
         setLoadingImage(true);
-        let files = [];
+        let files = fileList;
         for (let i = 0; i < event.target.files.length; i++) {
             files.push(event.target.files[i]);
         }
         const filess = await Promise.all(files.map(async f => {
-            const preview = await getBase64(f);
-            return { filename: await f, preview: await preview };
+            if (typeof (f.preview) === "undefined") {
+                const preview = await getBase64(f);
+                return { filename: await f, preview: await preview };
+            } else {
+                return await f;
+            }
         }));
+        console.log(filess.length);
         setFileList(filess);
         setLoadingImage(false);
     }
 
     const uploadFile = async () => {
         let data = new FormData();
-        await Promise.all(fileList.map(img => {
-            data.append('multi-files', img.filename);
-        }));
-
+        let imgs = [];
+        for (const img of fileList) {
+            if (typeof (img.filename.size) !== "undefined")
+                data.append('multi-files', img.filename);
+            else await imgs.push(img.filename.name);
+        }
 
         // const res = await fetch(`${httpUploadImage}`, {
         //     method: 'POST',
@@ -160,43 +189,50 @@ const AddProduct = (props) => {
         //     console.log(dataImg.filenames);
         //     return dataImg.filenames;
         // }
-        // else 
-        return [];
+        // else return [];
+
+        return imgs;
     }
 
     const onFinish = async values => {
-        // setLoadingAdd(true);
-        // console.log(values);
-        // let category = "";
-        // await Promise.all(values.category.map(cat => {
-        //     category += (values.category[values.category.length - 1] === cat) ? cat : cat + "/";
-        // }));
-        // let optionamounts = [];
-        // await Promise.all(values.attribute.map(att => {
-        //     const a = {
-        //         color_id: typeof (att.color) === "undefined" ? null : att.color,
-        //         size_id: (typeof (att.size) === "undefined" || att.size.length===0) ? null : att.size[1],
-        //         amount: att.amount
-        //     }
-        //     optionamounts.push(a);
-        // }));
+        console.log(values);
+        setLoadingAdd(true);
+        // let category = values.category[0]+"/"+values.category[1]+"/"+values.category[2];
+        let category = "";
+        await Promise.all(values.category.map(cat => {
+            category += (values.category[values.category.length - 1] === cat) ? cat : cat + "/";
+        }));
+        console.log(category);
+        let optionamounts = [];
+        await Promise.all(values.attribute.map(att => {
+            const a = {
+                color_id: typeof (att.color) === "undefined" ? null : att.color,
+                size_id: (typeof (att.size) === "undefined" || att.size === null || att.size.length === 0) ? null : att.size[1],
+                amount: att.amount
+            }
+            optionamounts.push(a);
+        }));
+        console.log(optionamounts);
         const listImages = await uploadFile();
-        // createProduct({
-        //     variables: {
-        //         name: values.name,
-        //         category_id: category,
-        //         price: values.price,
-        //         promotion_percent: values.percent,
-        //         description: values.description,
-        //         weight: values.weight,
-        //         is_freeship: values.freeship,
-        //         images: listImages,
-        //         option_amount: optionamounts
-        //     },
-        // });
+        console.log(listImages);
+        updateProduct({
+            variables: {
+                id: id,
+                name: values.name,
+                category_id: category,
+                price: values.price,
+                promotion_percent: values.percent,
+                description: values.description,
+                weight: values.weight,
+                is_freeship: values.freeship,
+                images: listImages,
+                option_amount: optionamounts
+            }
+        });
+        setLoadingAdd(false);
     };
 
-    const handleCancel = () => setPreview({ visible: false });
+    const handleCancel = () => setPreview({ visible: false, image: null, title: '' });
 
     const handlePreview = async file => {
         if (!file.preview) {
@@ -211,13 +247,18 @@ const AddProduct = (props) => {
 
     const handleDeleteImage = (index) => {
         let files = [...fileList];
-        files.splice(index, 1);
+        let dels = [...imgsDelete];
+        const a = files.splice(index, 1);
+        if (typeof (a[0].filename.size) === "undefined") {
+            dels.push(a[0].filename.name);
+            setImgsDelete(dels);
+        }
         setFileList(files);
     }
 
     return (
         <div style={{ backgroundColor: '#fff', padding: 16 }}>
-            <Spin size="large" spinning={loadingAdd}>
+            <Spin size="large" spinning={loadingAdd || loading || networkStatus === 4}>
                 <Form
                     {...formItemLayout}
                     form={form}
@@ -236,7 +277,7 @@ const AddProduct = (props) => {
                         onBack={() => history.replace('/products')}
                         title={
                             <div style={{ display: 'flex', alignItems: 'center' }}>
-                                <Title level={4} style={{ color: '#595959', textAlign: 'left', marginLeft: 10 }}>Thêm sản phẩm</Title>
+                                <Title level={4} style={{ color: '#595959', textAlign: 'left', marginLeft: 10 }}>Sửa sản phẩm</Title>
                             </div>
                         }
                     />
@@ -247,7 +288,7 @@ const AddProduct = (props) => {
                         rules={[
                             {
                                 required: true,
-                                message: 'Please input your E-mail!',
+                                message: 'Không được để trống!',
                             },
                         ]}
                     >
@@ -297,7 +338,7 @@ const AddProduct = (props) => {
                         </Space>
                     </Form.Item>
                     <Form.Item name="description" label="Mô tả">
-                        <TextArea rows={4} />
+                        <TextArea rows={4} autoSize />
                     </Form.Item>
                     <Divider style={{ margin: "15px 0px" }} />
                     <Form.Item
@@ -322,7 +363,7 @@ const AddProduct = (props) => {
                                 return (
                                     <div>
                                         {
-                                            fields.map(field => (
+                                            fields.map((field, index) => (
                                                 <Space key={field.key} style={{ display: 'flex', marginBottom: 8 }} align="start">
                                                     <Form.Item
                                                         {...field}
@@ -330,7 +371,7 @@ const AddProduct = (props) => {
                                                         fieldKey={[field.fieldKey, 'color']}
                                                         rules={[{ required: true, message: 'Vui lòng nhập màu' }]}
                                                     >
-                                                        <Select style={{ width: 120 }} allowClear placeholder="Màu sắc">
+                                                        <Select style={{ width: 120 }} allowClear placeholder="Màu sắc" disabled={(index >= lengthAttribute)?false: true}>
                                                             {
                                                                 optionColors.map(value => {
                                                                     return <Option key={value.value} value={value.value}>{value.label}</Option>
@@ -343,7 +384,7 @@ const AddProduct = (props) => {
                                                         name={[field.name, 'size']}
                                                         fieldKey={[field.fieldKey, 'size']}
                                                     >
-                                                        <Cascader options={optionSizes} placeholder="Kích thước" style={{ textAlign: 'left' }} displayRender={displayRender} />
+                                                        <Cascader options={optionSizes} placeholder="Kích thước" style={{ textAlign: 'left' }} displayRender={displayRender} disabled={(index >= lengthAttribute)?false: true}/>
                                                     </Form.Item>
                                                     <Form.Item
                                                         {...field}
@@ -353,8 +394,7 @@ const AddProduct = (props) => {
                                                     >
                                                         <InputNumber min={0} placeholder="Số lượng" />
                                                     </Form.Item>
-
-                                                    {fields.length > 1 ? (
+                                                    {index >= lengthAttribute ? (
                                                         <MinusCircleOutlined
                                                             className="dynamic-delete-button"
                                                             style={{ margin: '0 8px' }}
@@ -448,10 +488,10 @@ const AddProduct = (props) => {
                             <div className="ant-form-item-control-input">
                                 <div className="ant-form-item-control-input-content">
                                     <Button type="primary" htmlType="submit">
-                                        <PlusOutlined />
-                                    Thêm
+                                        <SaveOutlined />
+                                    Lưu
                                 </Button>
-                                    <Button htmlType="button" style={{ margin: '0 8px', }} className="button-close">
+                                    <Button htmlType="button" style={{ margin: '0 8px', }} className="button-close" onClick={() => history.replace('/products')}>
                                         <CloseOutlined />
                                     Huỷ
                                 </Button>
@@ -465,4 +505,4 @@ const AddProduct = (props) => {
     );
 };
 
-export default AddProduct;
+export default EditProduct;

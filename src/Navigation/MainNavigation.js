@@ -8,6 +8,7 @@ import { pageRoutes } from '../config/routers';
 import AddProduct from '../pages/ProductPage/addProduct';
 import { DownOutlined } from '@ant-design/icons';
 import DetailProduct from '../pages/ProductPage/detailProduct';
+import EditProduct from '../pages/ProductPage/editProduct';
 
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -71,9 +72,9 @@ const MainNavigation = () => {
         {/* <div style={{width: '100%'}}> */}
         <Header style={{ paddingLeft: 0, position: 'fixed', width: '100%', boxShadow: '0 4px #f0f1f2', zIndex: 2, backgroundColor: '#fff', display: 'flex', flexDirection: 'row-reverse', paddingRight: collapsed ? 100 : 220}}>
           <Dropdown overlay={menu}>
-            <a className="ant-dropdown-link" onClick={e => e.preventDefault()}>
+            <a className="ant-dropdown-link" onClick={e => e.preventDefault()} href="\#">
             <Avatar style={{ backgroundColor: 'orange', verticalAlign: 'middle', marginRight: 8 }} size="large" gap={4}>
-        AD
+        A
       </Avatar>
               Admin <DownOutlined />
             </a>
@@ -92,11 +93,12 @@ const MainNavigation = () => {
               }
               <Route key="addProd" path="/products/addProduct" component={AddProduct} />
               <Route key="detailProd" path="/products/detailProduct/:id" component={DetailProduct} />
+              <Route key="editProd" path="/products/editProduct/:id" component={EditProduct} />
               <Redirect to="/products" exact />
             </Switch>
           </div>
         </Content>
-        <Footer style={{ textAlign: 'center' }}>Ant Design ©2018 Created by Ant UED</Footer>
+        <Footer style={{ textAlign: 'center' }}>Design by Nguyen Phi Khang</Footer>
       </Layout>
     </Layout>
   );

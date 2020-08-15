@@ -23,34 +23,34 @@ const pageRoutes=[
             name: 'Quản lý kho',
             component: Products
         },
-        {
-            path: "/categories",
-            link: "/categories",
-            icon: React.createElement(AppstoreOutlined),
-            name: 'Quản lý khách hàng',
-            component: AddProduct
-        },
+        // {
+        //     path: "/categories",
+        //     link: "/categories",
+        //     icon: React.createElement(AppstoreOutlined),
+        //     name: 'Quản lý khách hàng',
+        //     component: AddProduct
+        // },
         {
             path: "/customers",
             link: "/customers",
             icon: React.createElement(TeamOutlined),
-            name: 'Quản lý đặt hàng',
+            name: 'Quản lý đơn hàng',
             component: TestPage
         },
-        {
-            path: "/reports",
-            link: "/reports",
-            icon: React.createElement(LineChartOutlined),
-            name: 'Thống kê',
-            component: Reports
-        },
-        {
-            path: "/settings",
-            link: "/settings",
-            icon: React.createElement(SettingOutlined),
-            name: 'Cài đặt',
-            component: Settings
-        }
+        // {
+        //     path: "/reports",
+        //     link: "/reports",
+        //     icon: React.createElement(LineChartOutlined),
+        //     name: 'Thống kê',
+        //     component: Reports
+        // },
+        // {
+        //     path: "/settings",
+        //     link: "/settings",
+        //     icon: React.createElement(SettingOutlined),
+        //     name: 'Cài đặt',
+        //     component: Settings
+        // }
 ];
 
 const authRoutes=[

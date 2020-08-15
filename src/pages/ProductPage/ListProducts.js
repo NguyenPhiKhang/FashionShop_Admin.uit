@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { Table, Radio, Form, Switch, Button, Pagination, Row } from 'antd';
 import { RedoOutlined, PlusCircleFilled, EditFilled, DeleteFilled, EyeFilled } from '@ant-design/icons';
-import { useQuery, useLazyQuery } from '@apollo/react-hooks';
+import { useQuery, useLazyQuery, useMutation } from '@apollo/react-hooks';
 import { getAllProductQuery, searchProductQuery } from '../../network/queries';
 import { useHistory } from 'react-router-dom';
 import Search from 'antd/lib/input/Search';
 import swal from 'sweetalert';
+import { deleteProductsMutation } from '../../network/mutations';
 
 const columns = [
     {
@@ -88,7 +89,7 @@ const ListProducts = () => {
     const history = useHistory();
     const [data, setDatas] = useState([]);
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
-    const [allProduct, { loading: LoadingProduct, refetch: refetchAllProduct }] = useLazyQuery(getAllProductQuery, {
+    const [allProduct, { loading: LoadingProduct, refetch: refetchAllProduct, networkStatus }] = useLazyQuery(getAllProductQuery, {
         onCompleted: async (datas) => {
             const d = await datas.getProduct.products;
             console.log(d);
@@ -96,6 +97,7 @@ const ListProducts = () => {
                 setTotalRecord(datas.getProduct.total_record);
             setDatas(d);
         },
+        notifyOnNetworkStatusChange: true
     });
 
     const [searchProduct, { loading: LoadingSearch, refetch: refetchSearch }] = useLazyQuery(searchProductQuery, {
@@ -105,6 +107,14 @@ const ListProducts = () => {
                 setTotalRecord(data.searchProduct.total_record);
             const ds = await [...d];
             setDatas(d);
+        }
+    });
+
+    const [deleteProducts] = useMutation(deleteProductsMutation, {
+        onCompleted: data => {
+            // setLoadingAdd(false);
+            if(data.deleteProduct === true)
+                swal(`Thành công!`, `Xoá thành sản phẩm thành công`, "success");
         }
     });
 
@@ -128,12 +138,12 @@ const ListProducts = () => {
     }
 
     useEffect(() => {
+        // await refetchAllProduct();
         fetchProduct();
     }, [paging, textSearch, data]);
 
     const onSelectChange = selectedRow => {
-
-        console.log('selectedRowKeys changed: ', selectedRow);
+        // console.log('selectedRowKeys changed: ', selectedRow);
         setSelectedRowKeys(selectedRow);
     }
 
@@ -165,17 +175,27 @@ const ListProducts = () => {
                     }}>
                         <PlusCircleFilled style={{ marginRight: 5 }} />Thêm
                 </Button>
-                    <Button style={{ display: 'flex', justifyContent: 'start', alignItems: 'center', marginRight: 5 }} onClick={() => {
-                        // history.push("/products/addProduct")
+                    <Button style={{ display: 'flex', justifyContent: 'start', alignItems: 'center', marginRight: 5 }} onClick={async () => {
+                        if (selectedRowKeys.length === 0 || selectedRowKeys.length > 1)
+                        swal("Vui lòng chọn một sản phẩm để sửa", "Nhấn để tiếp tục", "error");
+                    else {
+                        // await refetchAllProduct();
+                        history.push(`/products/editProduct/${selectedRowKeys[0]}`);
+                    }
                     }}>
                         <EditFilled style={{ marginRight: 5 }} />Sửa
                 </Button>
                     <Button style={{ display: 'flex', justifyContent: 'start', alignItems: 'center', marginRight: 5 }} onClick={() => {
-                        if (selectedRowKeys.length === 0 || selectedRowKeys.length > 1)
+                        if (selectedRowKeys.length === 0)
                             swal("Vui lòng chọn ít nhất một sản phẩm để xoá", "Nhấn để tiếp tục", "error");
                         else {
                             refetchAllProduct();
-                            history.push(`/products/detailProduct/${selectedRowKeys[0]}`);
+                            console.log(selectedRowKeys);
+                            // deleteProducts({
+                            //     variables:{
+                            //         ids: selectedRowKeys
+                            //     }
+                            // })
                         }
                     }}>
                         <DeleteFilled style={{ marginRight: 5 }} />Xoá
@@ -184,15 +204,15 @@ const ListProducts = () => {
                         if (selectedRowKeys.length === 0 || selectedRowKeys.length > 1)
                             swal("Vui lòng chọn một sản phẩm để xem chi tiết", "Nhấn để tiếp tục", "error");
                         else {
-                            await refetchAllProduct();
+                            refetchAllProduct();
                             history.push(`/products/detailProduct/${selectedRowKeys[0]}`);
                         }
                     }}>
                         <EyeFilled style={{ marginRight: 5 }} />Xem chi tiết
                 </Button>
                 </Row>
-                <Button style={{ display: 'flex', justifyContent: 'start', alignItems: 'center', marginRight: 5, }} onClick={() => {
-                    refetchAllProduct();
+                <Button style={{ display: 'flex', justifyContent: 'start', alignItems: 'center', marginRight: 5, }} onClick={ () => {
+                     refetchAllProduct();
                 }}>
                     <RedoOutlined style={{ marginRight: 5 }} />Làm mới
                 </Button>
@@ -203,7 +223,7 @@ const ListProducts = () => {
                 <Table
                     rowSelection={true}
                     columns={columns}
-                    loading={LoadingProduct || LoadingSearch}
+                    loading={LoadingProduct || LoadingSearch ||networkStatus===4}
                     dataSource={data}
                     rowSelection={rowSelection}
                     pagination={false}
