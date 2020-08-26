@@ -11,7 +11,7 @@ import AuthNavigation from './Navigation/AuthNavigation';
 
 const App = () => {
 
-  const [token, setToken] = useState();
+  const [token, setToken] = useState(null);
   const [accountId, setAccountId] = useState(null);
   const [nameAdmin, setNameAdmin] = useState(null);
 
