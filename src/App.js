@@ -41,10 +41,10 @@ const App = () => {
         >
           <ApolloProvider client={useAppApolloClient(token)}>
             <Switch>
-              {!token && <Route path="/auth" component={AuthNavigation} />}
-              {token && <Route path="/" component={MainNavigation} />}
-              {!token && <Redirect to="/auth/" exact />}
-              {token && <Redirect to="/" exact />}
+              {token===null && <Route path="/auth" component={AuthNavigation} />}
+              {token!==null && <Route path="/" component={MainNavigation} />}
+              {token==null && <Redirect to="/auth/" exact />}
+              {token!==null && <Redirect to="/" exact />}
             </Switch>
           </ApolloProvider>
         </AuthContext.Provider>
