@@ -75,8 +75,8 @@ function LoginPage() {
           name="basic"
           initialValues={{
             remember: true,
-            email: '',
-            password: '',
+            email: 'admin@123.gmail.com',
+            password: 'admin@123',
           }}
           onFinish={onFinish}
           onFinishFailed={onFinishFailed}
