@@ -1,4 +1,7 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Admin - Product Management
+
+<img src="https://user-images.githubusercontent.com/45101536/91628494-71422200-e9ea-11ea-804e-3dcb2cc2b423.png">
+<img src="https://user-images.githubusercontent.com/45101536/91628505-80c16b00-e9ea-11ea-9f7c-cf7914c05871.png">
 
 ## Available Scripts
 
